@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+/* Hover nur bei echter Maus */
+@custom-variant can-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+@custom-variant group-can-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:is(:where(.group):hover *) {
+      @slot;
+    }
+  }
+}
+
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --surface-2: #ece9e3;
+  --ink: #121212;
+  --ink-2: #4a4a4a;
+  --line: #e2ded6;
+  --accent: #ff5f3a;
+  --orange-1: #ffb36b;
+  --orange-2: #ff5f3a;
+  --orange-3: #e8501e;
+  --grad: linear-gradient(135deg, var(--orange-1) 0%, var(--orange-2) 55%, var(--orange-3) 100%);
+  --grad-soft: linear-gradient(160deg, #fff4ea 0%, #ffe3d3 55%, #ffd2bd 100%);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-orange-1: var(--orange-1);
+  --color-orange-2: var(--orange-2);
+  --color-orange-3: var(--orange-3);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --radius-card: 20px;
+  --radius-btn: 12px;
+  --shadow-float: 0 1px 2px rgb(18 18 18 / 0.04), 0 12px 32px -8px rgb(120 40 10 / 0.18);
+  --shadow-soft: 0 1px 2px rgb(18 18 18 / 0.04), 0 6px 20px -10px rgb(18 18 18 / 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+.bg-grad {
+  background: var(--grad);
+}
+
+.bg-grad-soft {
+  background: var(--grad-soft);
+}
+
+/* Weiche Orange-Fläche mit Lichtpunkt für Visuals */
+.glow-panel {
+  background:
+    radial-gradient(120% 90% at 85% 0%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
+    var(--grad);
+}
+
+.press {
+  transition: transform 120ms ease-out;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    transform: none;
+  }
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Eingabefelder: mindestens 16 px, damit iOS nicht zoomt */
+.feld {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 13px 14px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ink);
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+.feld:focus {
+  outline: none;
+  border-color: var(--ink);
+  background: var(--surface);
+}
+.feld[aria-invalid="true"] {
+  border-color: #b23a12;
+}
+
+/* Regler im Rechner: gefüllter Orange-Anteil über --p */
+.regler {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.regler::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orange-1), var(--orange-2) var(--p), var(--surface-2) var(--p));
+}
+.regler::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.regler::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orange-1), var(--orange-2));
+}
+.regler::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin-top: -11px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  box-shadow: 0 4px 12px -4px rgb(18 18 18 / 0.35);
+}
+.regler::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+}
+.regler:focus-visible {
+  outline: none;
+}
+.regler:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.regler:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
