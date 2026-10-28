@@ -8,14 +8,15 @@ export const site = {
   url: "https://maklerai.de",
   claim: "Digitalisierung für den Innendienst von Maklerbüros",
   beschreibung:
-    "Wir richten Automationen für kleine Versicherungsmaklerbüros ein: Schadenmeldung per Link, Kundenänderungen per Link und WhatsApp für Service und Vertrieb.",
+    "Wir richten Automationen für kleine Versicherungsmaklerbüros ein: Schadenmeldung per Link, WhatsApp für Service, Vertrieb und Newsletter sowie Kundenänderungen per Link.",
 
   person: {
     name: "Amadou Jalloh",
     vorname: "Amadou",
     email: "amadou@jalloh.net",
     foto: "/amadou-jalloh.jpg",
-    anschrift: "Beethovenstr. 21, 78054 Schwenningen",
+    strasse: "Beethovenstr. 21",
+    ort: "78054 Villingen-Schwenningen",
   },
 
   // Google-Kalender-Buchungsseite von amadou@jalloh.net

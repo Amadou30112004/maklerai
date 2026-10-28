@@ -18,7 +18,7 @@ export function Hero() {
               Wir digitalisieren den Innendienst Ihres Maklerbüros.
             </h1>
             <p className="mx-auto mt-6 max-w-[640px] text-[17px] leading-relaxed text-ink-2 sm:text-lg">
-              Weniger Handarbeit, mehr Zeit für Beratung. Schadenmeldungen, Kundenanfragen und Dokumente
+              Weniger Handarbeit, mehr Zeit für Beratung. Schadenmeldungen, Kundenanfragen und Änderungen
               laufen automatisch, Ihr Team prüft nur noch und gibt frei.
             </p>
             <div className="mt-8 flex flex-col items-center gap-4">

@@ -11,10 +11,17 @@ const vorschauen: Record<LoesungId, ReactNode> = {
   whatsapp: <VorschauWhatsApp />,
 };
 
-// Layout im Raster: Schadenmeldung zwei Spalten, WhatsApp über die volle Breite
-const spalten: Partial<Record<LoesungId, string>> = {
-  schadenmeldung: "md:col-span-2",
-  whatsapp: "md:col-span-2 lg:col-span-3",
+// Raster: Desktop 3 Spalten, Tablet jede Karte volle Breite, mobil untereinander
+const spalten: Record<Loesung["format"], string> = {
+  gross: "md:col-span-2",
+  klein: "md:col-span-2 lg:col-span-1",
+  breit: "md:col-span-2 lg:col-span-3",
+};
+
+const kartenLayout: Record<Loesung["format"], string> = {
+  gross: "lg:grid lg:grid-cols-[1fr_1.05fr] lg:gap-8",
+  klein: "",
+  breit: "lg:grid lg:grid-cols-[0.8fr_1.6fr] lg:gap-10 lg:p-9",
 };
 
 export function Loesungen() {
@@ -33,9 +40,9 @@ export function Loesungen() {
 
         <ul className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {loesungen.map((l, i) => (
-            <li key={l.id} className={`min-w-0 ${spalten[l.id] ?? ""}`}>
+            <li key={l.id} className={`min-w-0 ${spalten[l.format]}`}>
               <Reveal delay={(i % 3) * 0.05} className="h-full">
-                <Karte loesung={l} gross={!!spalten[l.id]} breit={l.id === "whatsapp"} />
+                <Karte loesung={l} />
               </Reveal>
             </li>
           ))}
@@ -55,12 +62,11 @@ export function Loesungen() {
   );
 }
 
-function Karte({ loesung: l, gross, breit = false }: { loesung: Loesung; gross: boolean; breit?: boolean }) {
+function Karte({ loesung: l }: { loesung: Loesung }) {
+  const gross = l.format !== "klein";
   return (
     <article
-      className={`group flex h-full flex-col rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out sm:p-7 motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)] ${
-        breit ? "lg:grid lg:grid-cols-[1fr_1.25fr] lg:gap-10 lg:p-9" : gross ? "lg:grid lg:grid-cols-[1fr_1.05fr] lg:gap-8" : ""
-      }`}
+      className={`group flex h-full flex-col rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out sm:p-7 motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)] ${kartenLayout[l.format]}`}
     >
       <div className="flex min-w-0 flex-col">
         <IconKachel
@@ -124,52 +130,75 @@ function VorschauSchaden() {
   );
 }
 
+// Beispieldaten erfunden, nur zur Veranschaulichung
 function VorschauChat() {
   return (
-    <Mini className="max-w-[340px] space-y-2">
-      <div className="max-w-[85%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2">Mein Keller ist voll Wasser</div>
-      <div className="ml-auto max-w-[92%] rounded-[12px] rounded-br-[4px] border border-dashed border-line bg-surface-2 px-3 py-2 text-ink-2">
-        <span className="block text-[10.5px] font-medium uppercase tracking-[0.06em]">Entwurf</span>
-        Das tut uns leid. Bitte melden Sie den Schaden hier: [Link]
+    <Mini className="h-full">
+      <div className="flex items-center gap-2.5 border-b border-line pb-2.5">
+        <span className="bg-grad grid size-8 shrink-0 place-items-center rounded-full text-[13px] font-medium text-white">
+          W
+        </span>
+        <span className="flex-1 font-medium">Herr Weber</span>
+        <span className="text-[11px] text-ink-2">WhatsApp</span>
       </div>
-      <div className="flex justify-end">
+      <div className="mt-3 max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2 leading-snug">
+        Hallo, mir ist heute einer reingefahren. Was soll ich jetzt machen und wie melde ich den Schaden?
+        <span className="mt-1 block text-right text-[10.5px] text-ink-2">14:32</span>
+      </div>
+      <div className="mt-2.5 ml-auto max-w-[92%] rounded-[12px] rounded-br-[4px] border border-dashed border-ink-2/30 bg-surface-2/60 px-3 py-2 leading-snug">
+        <span className="mb-1 inline-block rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-[#B23A12]">
+          KI-Entwurf
+        </span>
+        <span className="block">
+          Das tut uns leid, Herr Weber. Ist jemand verletzt? Wenn nicht: Fotos machen und das Kennzeichen notieren. Den
+          Schaden melden Sie direkt hier: [Link]
+        </span>
+      </div>
+      <div className="mt-2.5 flex justify-end gap-2">
+        <span className="rounded-[9px] border border-line bg-surface px-3 py-1.5 font-medium">Bearbeiten</span>
         <span className="rounded-[9px] bg-ink px-3 py-1.5 font-medium text-white">Senden</span>
       </div>
     </Mini>
   );
 }
 
+// Beispieldaten erfunden, nur zur Veranschaulichung
 function VorschauNewsletter() {
   return (
-    <Mini className="max-w-[340px]">
-      <div className="flex items-center justify-between border-b border-line pb-2.5">
-        <span className="text-[11px] uppercase tracking-[0.08em] text-ink-2">Newsletter per WhatsApp</span>
+    <Mini className="h-full">
+      <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+        <span className="font-medium">Newsletter per WhatsApp</span>
         <span className="rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10.5px] font-medium text-[#B23A12]">geplant</span>
       </div>
-      <div className="mt-3 ml-auto max-w-[94%] rounded-[12px] rounded-br-[4px] bg-[#FFF1E8] px-3 py-2.5 leading-snug">
+      <div className="mt-3 max-w-[94%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2.5 leading-snug">
         Guten Morgen, Frau Becker. Die Unwettersaison beginnt. Ist Ihr Haus gegen Starkregen abgesichert? Wir prüfen
         das gern kurz für Sie.
-        <span className="mt-2 block rounded-[8px] bg-surface py-1.5 text-center font-medium text-[#B23A12]">
+        <span className="mt-2 block rounded-[8px] border border-line bg-surface py-1.5 text-center font-medium text-[#B23A12]">
           Rückruf anfragen
         </span>
       </div>
-      <div className="mt-3 space-y-1 text-[11.5px] text-ink-2">
-        <p>Empfänger: Kunden mit Einwilligung, Sparte Wohngebäude</p>
-        <p>Versand: Dienstag, 9:00 Uhr</p>
-      </div>
+      <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-[11.5px] text-ink-2">
+        <dt>Empfänger:</dt>
+        <dd>Kunden mit Einwilligung, Sparte Wohngebäude</dd>
+        <dt>Versand:</dt>
+        <dd>Dienstag, 9:00 Uhr</dd>
+      </dl>
     </Mini>
   );
 }
 
 function VorschauWhatsApp() {
   return (
-    <div className="grid w-full items-center gap-4 sm:grid-cols-2">
-      <div className="flex justify-center">
-        <VorschauChat />
-      </div>
-      <div className="flex justify-center">
-        <VorschauNewsletter />
-      </div>
+    <div className="grid w-full gap-5 sm:grid-cols-2">
+      {[
+        { label: "Service", inhalt: <VorschauChat /> },
+        { label: "Vertrieb", inhalt: <VorschauNewsletter /> },
+      ].map((v) => (
+        <div key={v.label} className="flex min-w-0 flex-col">
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-ink">{v.label}</p>
+          <div className="flex-1">{v.inhalt}</div>
+        </div>
+      ))}
     </div>
   );
 }

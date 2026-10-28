@@ -40,8 +40,8 @@ const fragen: { f: string; a: string }[] = [
     a: "Wir nutzen die offizielle WhatsApp-Business-Plattform, keine privaten Handys. Die datenschutzrechtliche Einordnung für Ihr Büro klären wir vor dem Start gemeinsam mit Ihnen.",
   },
   {
-    f: "Darf ich meinen Kunden Newsletter per WhatsApp schicken?",
-    a: "Ja, wenn Ihre Kunden vorher zugestimmt haben. Wir richten den Newsletter so ein, dass nur Kunden mit Einwilligung ihn bekommen und sich jederzeit abmelden können.",
+    f: "Darf ich per WhatsApp Newsletter und Angebote verschicken?",
+    a: "Ja, an Kunden, die vorher eingewilligt haben. Wie Sie die Einwilligung sauber einholen, zum Beispiel über Ihre Website oder den ersten Chat, richten wir gemeinsam mit Ihnen ein. Die Kosten, die WhatsApp für solche Nachrichten berechnet, besprechen wir im Erstgespräch.",
   },
   {
     f: "Prüft die KI meine Verträge?",

@@ -15,7 +15,9 @@ export default function DatenschutzSeite() {
       <p>
         {site.person.name}
         <br />
-        {site.person.anschrift}
+        {site.person.strasse}
+        <br />
+        {site.person.ort}
         <br />
         E-Mail: {site.person.email}
       </p>

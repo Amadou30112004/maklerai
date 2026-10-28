@@ -40,31 +40,12 @@ export function IconSprechblaseFunken(props: IconProps) {
   );
 }
 
-export function IconOrdnerPfeil(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <path d="M9 13h6M12.5 10.5 15 13l-2.5 2.5" />
-    </Base>
-  );
-}
-
 export function IconPersonStift(props: IconProps) {
   return (
     <Base {...props}>
       <circle cx="9" cy="8" r="3.5" />
       <path d="M3 20a6 6 0 0 1 9.5-4.9" />
       <path d="m18.5 12.5 2 2-5 5H13.5v-2z" />
-    </Base>
-  );
-}
-
-export function IconKlammerUhr(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M14.5 7.5 8 14a1.8 1.8 0 0 0 2.5 2.5l7-7a3.5 3.5 0 0 0-5-5L5.5 11.5a5.2 5.2 0 0 0 4.2 8.8" />
-      <circle cx="17.5" cy="17.5" r="3.5" />
-      <path d="M17.5 16v1.6l1 .9" />
     </Base>
   );
 }

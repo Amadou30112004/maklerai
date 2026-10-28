@@ -13,7 +13,9 @@ export default function Impressum() {
       <p>
         {site.person.name}
         <br />
-        {site.person.anschrift}
+        {site.person.strasse}
+        <br />
+        {site.person.ort}
       </p>
 
       <h2>Kontakt</h2>
@@ -28,7 +30,7 @@ export default function Impressum() {
 
       <h2>Verantwortlich für den Inhalt</h2>
       <p>
-        {site.person.name}, {site.person.anschrift}
+        {site.person.name}, {site.person.strasse}, {site.person.ort}
       </p>
 
       <h2>Verbraucherstreitbeilegung</h2>
