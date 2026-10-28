@@ -1,7 +1,7 @@
 import { site } from "@/config/site";
 import { Container, SectionHead } from "./ui/Basis";
 import { IconEU, IconKeinTraining, IconTrennung, IconVertrag } from "./ui/Icons";
-import { Reveal } from "./ui/Reveal";
+import { Reveal, staffel } from "./ui/Reveal";
 
 const icons = [IconEU, IconVertrag, IconTrennung, IconKeinTraining];
 
@@ -15,25 +15,23 @@ export function Datenschutz() {
               <SectionHead
                 id="datenschutz-titel"
                 eyebrow="Datenschutz"
-                titel="Datenschutz, wie Schadendaten ihn brauchen"
-                text="Schadenfotos und Kundendaten gehören nicht in private Chats."
+                titel="Schadenfotos gehören nicht aufs Privathandy."
+                text="Kundendaten und Fotos liegen bei uns sicher und getrennt je Büro, nicht in privaten Chats."
               />
             </Reveal>
-            <ul className="grid grid-cols-2 gap-4">
+            <ul data-stagger="" className="grid grid-cols-2 gap-4">
               {site.datenschutzVersprechen.map((v, i) => {
                 const Icon = icons[i];
                 return (
-                  <li key={v}>
-                    <Reveal delay={i * 0.04} className="h-full">
-                      <div className="flex h-full flex-col items-center rounded-[20px] bg-bg p-5 text-center">
-                        <span className="grid size-16 place-items-center rounded-full bg-surface ring-1 ring-line">
-                          <span className="bg-grad grid size-11 place-items-center rounded-full text-white">
-                            <Icon className="size-5" />
-                          </span>
+                  <li key={v} style={staffel(i)}>
+                    <div className="flex h-full flex-col items-center rounded-[20px] bg-bg p-5 text-center">
+                      <span className="grid size-16 place-items-center rounded-full bg-surface ring-1 ring-line">
+                        <span className="bg-grad grid size-11 place-items-center rounded-full text-white">
+                          <Icon className="size-5" />
                         </span>
-                        <span className="mt-3 text-[14.5px] font-medium leading-snug">{v}</span>
-                      </div>
-                    </Reveal>
+                      </span>
+                      <span className="mt-3 text-[14.5px] font-medium leading-snug">{v}</span>
+                    </div>
                   </li>
                 );
               })}

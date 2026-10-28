@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/config/site";
+import { MobilMenue } from "./MobilMenue";
 import { Container, PrimaryButton } from "./ui/Basis";
 
 const links = [
@@ -25,15 +26,15 @@ export function Logo() {
 export function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b border-transparent bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-      <Container className="flex h-[68px] items-center justify-between gap-4">
+      <Container className="relative flex h-[68px] items-center justify-between gap-2 sm:gap-4">
         <Logo />
-        <nav aria-label="Hauptnavigation" className="hidden md:block">
-          <ul className="flex items-center gap-1 rounded-full bg-surface-2 p-1">
+        <nav aria-label="Hauptnavigation" className="hidden sm:block">
+          <ul className="flex items-center gap-0.5 rounded-full bg-surface-2 p-1 lg:gap-1">
             {links.map((l) => (
               <li key={l.href}>
                 <a
                   href={l.href}
-                  className="inline-flex min-h-[36px] items-center rounded-full px-4 text-[14px] text-ink-2 transition-colors can-hover:bg-surface can-hover:text-ink"
+                  className="inline-flex min-h-[36px] items-center rounded-full px-3 text-[14px] text-ink-2 transition-colors can-hover:bg-surface can-hover:text-ink lg:px-4"
                 >
                   {l.label}
                 </a>
@@ -41,7 +42,12 @@ export function Nav() {
             ))}
           </ul>
         </nav>
-        <PrimaryButton href="/#pilot">Erstgespräch</PrimaryButton>
+        <div className="flex items-center gap-2">
+          <div className="hidden min-[400px]:block">
+            <PrimaryButton href="/#pilot">Erstgespräch</PrimaryButton>
+          </div>
+          <MobilMenue links={links} />
+        </div>
       </Container>
     </header>
   );

@@ -20,6 +20,10 @@ export function Footer() {
           <a href={`mailto:${site.person.email}`} className="text-ink-2 underline decoration-line underline-offset-4 can-hover:text-ink">
             {site.person.email}
           </a>
+          <br />
+          <a href={site.person.telefonLink} className="text-ink-2 underline decoration-line underline-offset-4 can-hover:text-ink">
+            {site.person.telefonAnzeige}
+          </a>
           <p className="text-ink-2">
             {site.person.strasse}
             <br />

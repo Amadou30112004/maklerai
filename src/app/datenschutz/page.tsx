@@ -34,7 +34,12 @@ export default function DatenschutzSeite() {
         Wenn Sie das Formular nutzen, verarbeiten wir Ihre Angaben (Name, Maklerbüro, E-Mail, optional Telefon sowie
         Ihre Antworten zu Büro und Interessen), um das Erstgespräch vorzubereiten. Rechtsgrundlage ist Ihre Einwilligung
         (Art. 6 Abs. 1 lit. a DSGVO) sowie vorvertragliche Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO). Sie können Ihre
-        Einwilligung jederzeit per E-Mail widerrufen. [Speicherdauer und ggf. E-Mail-Versanddienst ergänzen.]
+        Einwilligung jederzeit per E-Mail widerrufen.
+      </p>
+      <p>
+        Ihre Anfrage wird in einer Tabelle bei Google Sheets gespeichert (Google Ireland Limited, Gordon House,
+        Barrow Street, Dublin 4, Irland). [Speicherdauer festlegen, z. B. 12 Monate nach letztem Kontakt] [Hinweis
+        Auftragsverarbeitung mit Google prüfen]
       </p>
 
       <h2>4. Terminbuchung über Google</h2>

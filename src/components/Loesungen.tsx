@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { loesungen, type Loesung } from "./loesungen-daten";
 import { Container, IconKachel, SectionHead } from "./ui/Basis";
 import { IconHaken, IconPdf, IconPfeilRechts } from "./ui/Icons";
-import { Reveal } from "./ui/Reveal";
+import { Reveal, staffel } from "./ui/Reveal";
 import type { LoesungId } from "@/lib/schema";
 
 const vorschauen: Record<LoesungId, ReactNode> = {
@@ -32,18 +32,16 @@ export function Loesungen() {
           <SectionHead
             id="loesungen-titel"
             eyebrow="Lösungen"
-            titel="Drei Automationen. Ein Innendienst, der mitdenkt."
+            titel="Drei Dinge, die Ihrem Innendienst Arbeit abnehmen."
             text="Wählen Sie, womit Ihr Büro startet. Wir richten es ein, Sie arbeiten weiter wie gewohnt."
             center
           />
         </Reveal>
 
-        <ul className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <ul data-stagger="" className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {loesungen.map((l, i) => (
-            <li key={l.id} className={`min-w-0 ${spalten[l.format]}`}>
-              <Reveal delay={(i % 3) * 0.05} className="h-full">
-                <Karte loesung={l} />
-              </Reveal>
+            <li key={l.id} style={staffel(i)} className={`min-w-0 ${spalten[l.format]}`}>
+              <Karte loesung={l} />
             </li>
           ))}
         </ul>
@@ -98,20 +96,33 @@ function Karte({ loesung: l }: { loesung: Loesung }) {
   );
 }
 
-function Mini({ children, className = "" }: { children: ReactNode; className?: string }) {
+function Mini({ children, className = "", anim = false }: { children: ReactNode; className?: string; anim?: boolean }) {
   return (
-    <div className={`w-full rounded-[14px] bg-surface p-3.5 text-[12.5px] shadow-[var(--shadow-float)] ${className}`}>
+    <div
+      data-anim={anim ? "" : undefined}
+      className={`w-full rounded-[14px] bg-surface p-3.5 text-[12.5px] shadow-[var(--shadow-float)] ${anim ? "seq" : ""} ${className}`}
+    >
       {children}
     </div>
   );
 }
 
+const verzoegerung = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
+
 function VorschauSchaden() {
   return (
-    <Mini className="max-w-[400px]">
+    <Mini className="max-w-[400px]" anim>
       <div className="flex items-center justify-between border-b border-line pb-2.5">
         <span className="text-[11px] uppercase tracking-[0.08em] text-ink-2">Entwurf an Versicherer</span>
-        <span className="rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10.5px] font-medium text-[#B23A12]">vollständig</span>
+        <span
+          style={verzoegerung(350)}
+          className="seq-teil seq-pop inline-flex items-center gap-1 rounded-full bg-[#FFE6DB] py-0.5 pl-1.5 pr-2 text-[10.5px] font-medium text-[#B23A12]"
+        >
+          <svg viewBox="0 0 12 12" className="seq-haken size-3" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2.5 6.3 5 8.6l4.5-5" pathLength={1} />
+          </svg>
+          vollständig
+        </span>
       </div>
       <p className="mt-2.5 font-medium">Schadenmeldung Hausrat, Vertrag [NR]</p>
       <div className="mt-2 space-y-1.5">
@@ -133,7 +144,7 @@ function VorschauSchaden() {
 // Beispieldaten erfunden, nur zur Veranschaulichung
 function VorschauChat() {
   return (
-    <Mini className="h-full">
+    <Mini className="h-full" anim>
       <div className="flex items-center gap-2.5 border-b border-line pb-2.5">
         <span className="bg-grad grid size-8 shrink-0 place-items-center rounded-full text-[13px] font-medium text-white">
           W
@@ -141,20 +152,34 @@ function VorschauChat() {
         <span className="flex-1 font-medium">Herr Weber</span>
         <span className="text-[11px] text-ink-2">WhatsApp</span>
       </div>
-      <div className="mt-3 max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2 leading-snug">
+      <div
+        style={verzoegerung(0)}
+        className="seq-teil mt-3 max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2 leading-snug"
+      >
         Hallo, mir ist heute einer reingefahren. Was soll ich jetzt machen und wie melde ich den Schaden?
         <span className="mt-1 block text-right text-[10.5px] text-ink-2">14:32</span>
       </div>
-      <div className="mt-2.5 ml-auto max-w-[92%] rounded-[12px] rounded-br-[4px] border border-dashed border-ink-2/30 bg-surface-2/60 px-3 py-2 leading-snug">
-        <span className="mb-1 inline-block rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-[#B23A12]">
-          KI-Entwurf
+      <div className="relative mt-2.5">
+        {/* Tippanzeige liegt über dem Platz des Entwurfs, damit nichts springt */}
+        <span className="wa-tippen absolute right-0 top-0 flex gap-1 rounded-[12px] bg-surface-2 px-3 py-2.5">
+          <span className="size-1.5 rounded-full bg-ink-2/60" />
+          <span className="size-1.5 rounded-full bg-ink-2/60" />
+          <span className="size-1.5 rounded-full bg-ink-2/60" />
         </span>
-        <span className="block">
-          Das tut uns leid, Herr Weber. Ist jemand verletzt? Wenn nicht: Fotos machen und das Kennzeichen notieren. Den
-          Schaden melden Sie direkt hier: [Link]
-        </span>
+        <div
+          style={verzoegerung(950)}
+          className="seq-teil ml-auto max-w-[92%] rounded-[12px] rounded-br-[4px] border border-dashed border-ink-2/30 bg-surface-2/60 px-3 py-2 leading-snug"
+        >
+          <span className="mb-1 inline-block rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-[#B23A12]">
+            KI-Entwurf
+          </span>
+          <span className="block">
+            Das tut uns leid, Herr Weber. Ist jemand verletzt? Wenn nicht: Fotos machen und das Kennzeichen notieren. Den
+            Schaden melden Sie direkt hier: [Link]
+          </span>
+        </div>
       </div>
-      <div className="mt-2.5 flex justify-end gap-2">
+      <div style={verzoegerung(1250)} className="seq-teil mt-2.5 flex justify-end gap-2">
         <span className="rounded-[9px] border border-line bg-surface px-3 py-1.5 font-medium">Bearbeiten</span>
         <span className="rounded-[9px] bg-ink px-3 py-1.5 font-medium text-white">Senden</span>
       </div>
@@ -165,10 +190,15 @@ function VorschauChat() {
 // Beispieldaten erfunden, nur zur Veranschaulichung
 function VorschauNewsletter() {
   return (
-    <Mini className="h-full">
+    <Mini className="h-full" anim>
       <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
         <span className="font-medium">Newsletter per WhatsApp</span>
-        <span className="rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10.5px] font-medium text-[#B23A12]">geplant</span>
+        <span
+          style={verzoegerung(1500)}
+          className="seq-teil seq-pop rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10.5px] font-medium text-[#B23A12]"
+        >
+          geplant
+        </span>
       </div>
       <div className="mt-3 max-w-[94%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2.5 leading-snug">
         Guten Morgen, Frau Becker. Die Unwettersaison beginnt. Ist Ihr Haus gegen Starkregen abgesichert? Wir prüfen

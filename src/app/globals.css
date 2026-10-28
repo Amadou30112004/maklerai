@@ -126,6 +126,208 @@ details > summary::-webkit-details-marker {
   display: none;
 }
 
+/* ------------------------------------------------------------------
+   Bewegung beim Scrollen
+   Inhalte sind im HTML immer sichtbar. Versteckt wird erst, wenn
+   ScrollEffekte die Klasse .anim-bereit am <html> gesetzt hat.
+   Ausgelöst wird über .is-visible (einmalig). Nur transform, opacity
+   und bei SVG-Linien stroke-dashoffset.
+   ------------------------------------------------------------------ */
+
+.kreis-bogen {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.wa-tippen {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Einzelne Blöcke */
+  .anim-bereit [data-reveal] {
+    transition:
+      opacity 450ms ease-out,
+      transform 450ms ease-out;
+    transition-delay: var(--d, 0ms);
+  }
+  .anim-bereit [data-reveal]:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* Kartenreihen: Kinder nacheinander, 60 ms Versatz */
+  .anim-bereit [data-stagger] > * {
+    transition:
+      opacity 450ms ease-out,
+      transform 450ms ease-out;
+    transition-delay: calc(var(--i, 0) * 60ms);
+  }
+  .anim-bereit [data-stagger]:not(.is-visible) > * {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* Hero: Karten kommen nacheinander von unten, danach leichtes Schweben */
+  .hero-ankunft {
+    animation: hero-hoch 600ms ease-out both;
+    animation-delay: var(--d, 0ms);
+  }
+  .hero-schweben {
+    animation: hero-schweben var(--dauer, 7s) ease-in-out var(--sd, 0s) infinite;
+  }
+
+  /* Kreislauf: Pfeile zeichnen sich nacheinander, danach die Stationen */
+  .anim-bereit .kreis .kreis-bogen {
+    transition: stroke-dashoffset 450ms ease-out;
+    transition-delay: calc(var(--i, 0) * 450ms);
+  }
+  .anim-bereit .kreis:not(.is-visible) .kreis-bogen {
+    stroke-dashoffset: 1;
+  }
+  .anim-bereit .kreis .kreis-spitze {
+    transition: opacity 150ms ease-out;
+    transition-delay: calc(var(--i, 0) * 450ms + 400ms);
+  }
+  .anim-bereit .kreis:not(.is-visible) .kreis-spitze {
+    opacity: 0;
+  }
+  .anim-bereit .kreis .kreis-station {
+    transition:
+      opacity 350ms ease-out,
+      transform 350ms ease-out;
+    transition-delay: calc(1400ms + var(--i, 0) * 100ms);
+  }
+  .anim-bereit .kreis:not(.is-visible) .kreis-station {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  /* Gestaffelte Elemente in Vorschauen (WhatsApp, Schadenmeldung) */
+  .anim-bereit .seq .seq-teil {
+    transition:
+      opacity 300ms ease-out,
+      transform 300ms ease-out;
+    transition-delay: var(--d, 0ms);
+  }
+  .anim-bereit .seq:not(.is-visible) .seq-teil {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .anim-bereit .seq:not(.is-visible) .seq-pop {
+    transform: scale(0.8);
+  }
+  .anim-bereit .seq.is-visible .wa-tippen {
+    animation: wa-tippen 600ms ease-out 350ms both;
+  }
+  .wa-tippen span {
+    animation: wa-punkt 600ms ease-in-out 1;
+  }
+  .wa-tippen span:nth-child(2) {
+    animation-delay: 100ms;
+  }
+  .wa-tippen span:nth-child(3) {
+    animation-delay: 200ms;
+  }
+  .anim-bereit .seq .seq-haken path {
+    transition: stroke-dashoffset 300ms ease-out;
+    transition-delay: 650ms;
+  }
+  .anim-bereit .seq:not(.is-visible) .seq-haken path {
+    stroke-dashoffset: 1;
+  }
+
+  /* Ablauf: Verbindungslinie füllt sich (mobil von oben, ab md von links) */
+  .ablauf-fuellung {
+    transform-origin: top;
+    transition: transform 300ms ease-out;
+    transition-delay: calc(var(--i, 0) * 300ms + 200ms);
+  }
+  .anim-bereit .ablauf:not(.is-visible) .ablauf-fuellung {
+    transform: scaleY(0);
+  }
+  @media (min-width: 768px) {
+    .ablauf-fuellung {
+      transform-origin: left;
+    }
+    .anim-bereit .ablauf:not(.is-visible) .ablauf-fuellung {
+      transform: scaleX(0);
+    }
+  }
+
+  /* FAQ: Antwort klappt weich auf, wo der Browser es kann */
+  @supports selector(::details-content) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+    .faq-eintrag::details-content {
+      block-size: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition:
+        block-size 280ms ease-out,
+        opacity 280ms ease-out,
+        content-visibility 280ms allow-discrete;
+    }
+    .faq-eintrag[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
+}
+
+.seq-haken path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+@keyframes hero-hoch {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-schweben {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-6px);
+  }
+  75% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes wa-tippen {
+  0% {
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes wa-punkt {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
 /* Eingabefelder: mindestens 16 px, damit iOS nicht zoomt */
 .feld {
   display: block;

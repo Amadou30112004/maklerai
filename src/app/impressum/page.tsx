@@ -22,7 +22,10 @@ export default function Impressum() {
       <p>
         E-Mail: <a href={`mailto:${site.person.email}`} className="underline underline-offset-4">{site.person.email}</a>
         <br />
-        Telefon: {p.telefon}
+        Telefon:{" "}
+        <a href={site.person.telefonLink} className="underline underline-offset-4">
+          {site.person.telefonAnzeige}
+        </a>
       </p>
 
       <h2>Umsatzsteuer</h2>

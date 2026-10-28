@@ -1,5 +1,5 @@
 import { Container, SectionHead } from "./ui/Basis";
-import { Reveal } from "./ui/Reveal";
+import { Reveal, staffel } from "./ui/Reveal";
 
 const schritte = [
   {
@@ -28,21 +28,30 @@ export function Ablauf() {
           />
         </Reveal>
 
-        <ol className="mt-12 grid gap-5 md:grid-cols-3">
+        {/* Zeitleiste: mobil Nummern links mit Linie nach unten, ab md Nummern oben mit Linie nach rechts */}
+        <ol data-stagger="" data-anim="" className="ablauf mt-12 grid gap-5 md:grid-cols-3">
           {schritte.map((s, i) => (
-            <li key={s.titel}>
-              <Reveal delay={i * 0.05} className="h-full">
-                <div className="relative h-full rounded-[20px] bg-surface p-6 shadow-[var(--shadow-soft)] sm:p-7">
-                  <div className="flex items-center gap-3">
-                    <span className="bg-grad grid size-10 place-items-center rounded-full text-[15px] font-medium text-white">
-                      {i + 1}
-                    </span>
-                    <span className="text-[12px] uppercase tracking-[0.1em] text-ink-2">Schritt {i + 1}</span>
-                  </div>
-                  <h3 className="mt-5 text-[21px]">{s.titel}</h3>
-                  <p className="mt-2.5 text-[15.5px] leading-relaxed text-ink-2">{s.text}</p>
-                </div>
-              </Reveal>
+            <li
+              key={s.titel}
+              style={staffel(i)}
+              className="relative grid grid-cols-[40px_1fr] gap-4 md:flex md:flex-col md:gap-4"
+            >
+              <span className="bg-grad relative z-10 grid size-10 place-items-center rounded-full text-[15px] font-medium text-white">
+                {i + 1}
+              </span>
+              {i < schritte.length - 1 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute left-[19px] top-12 h-[calc(100%-36px)] w-0.5 overflow-hidden rounded-full bg-line md:left-12 md:top-[19px] md:h-0.5 md:w-[calc(100%-36px)]"
+                >
+                  <span className="ablauf-fuellung bg-grad absolute inset-0" style={staffel(i)} />
+                </span>
+              )}
+              <div className="h-full rounded-[20px] bg-surface p-6 shadow-[var(--shadow-soft)] sm:p-7">
+                <span className="text-[12px] uppercase tracking-[0.1em] text-ink-2">Schritt {i + 1}</span>
+                <h3 className="mt-2 text-[21px]">{s.titel}</h3>
+                <p className="mt-2.5 text-[15.5px] leading-relaxed text-ink-2">{s.text}</p>
+              </div>
             </li>
           ))}
         </ol>

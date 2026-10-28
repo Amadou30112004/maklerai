@@ -1,8 +1,8 @@
+import type { CSSProperties } from "react";
 import { Container, Eyebrow, PrimaryButton } from "./ui/Basis";
 import { IconDokumentBlitz, IconFoto, IconPdf } from "./ui/Icons";
-import { Reveal } from "./ui/Reveal";
 
-const sparten = ["Hausrat", "Wohngebäude", "Privathaftpflicht", "Glas", "weitere auf Anfrage"];
+const sparten = ["Kfz", "Hausrat", "Wohngebäude", "Privathaftpflicht", "Glas", "weitere auf Anfrage"];
 
 export function Hero() {
   return (
@@ -32,15 +32,21 @@ export function Hero() {
           </div>
         </div>
 
-        <Reveal delay={0.08}>
-          <div className="glow-panel relative mt-14 overflow-hidden rounded-[28px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
-            <div className="grid items-center gap-5 md:grid-cols-3 md:gap-6">
-              <WebsiteKarte />
-              <HandyKarte />
-              <MailKarte />
-            </div>
+        <div className="glow-panel relative mt-14 overflow-hidden rounded-[28px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
+          <div className="grid grid-cols-1 items-center gap-5 md:grid-cols-3 md:gap-6">
+            {[
+              { karte: <WebsiteKarte />, ankunft: "100ms", schweben: "0s", dauer: "7s" },
+              { karte: <HandyKarte />, ankunft: "220ms", schweben: "-2.4s", dauer: "8s" },
+              { karte: <MailKarte />, ankunft: "340ms", schweben: "-4.6s", dauer: "6.5s" },
+            ].map((k, i) => (
+              <div key={i} className="hero-ankunft min-w-0" style={{ "--d": k.ankunft } as CSSProperties}>
+                <div className="hero-schweben" style={{ "--sd": k.schweben, "--dauer": k.dauer } as CSSProperties}>
+                  {k.karte}
+                </div>
+              </div>
+            ))}
           </div>
-        </Reveal>
+        </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <span className="mr-1 text-[13px] text-ink-2">Schadenmeldung für</span>

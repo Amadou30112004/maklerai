@@ -8,6 +8,7 @@ import { Kreislauf } from "@/components/Kreislauf";
 import { Loesungen } from "@/components/Loesungen";
 import { Nav } from "@/components/Nav";
 import { Rechner } from "@/components/Rechner";
+import { ScrollEffekte } from "@/components/ScrollEffekte";
 import { UeberMich } from "@/components/UeberMich";
 import { Vorteile } from "@/components/Vorteile";
 import { Warum } from "@/components/Warum";
@@ -30,6 +31,7 @@ export default function Home() {
         <Erstgespraech />
       </main>
       <Footer />
+      <ScrollEffekte />
     </>
   );
 }

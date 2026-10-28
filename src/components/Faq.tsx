@@ -21,7 +21,7 @@ const fragen: { f: string; a: string }[] = [
   },
   {
     f: "Für welche Sparten eignet sich die Schadenmeldung?",
-    a: "Zum Start für private Sachsparten wie Hausrat, Wohngebäude, Privathaftpflicht und Glas. Weitere Sparten richten wir auf Anfrage ein.",
+    a: "Zum Start für Kfz und die privaten Sachsparten Hausrat, Wohngebäude, Privathaftpflicht und Glas. Weitere Sparten richten wir auf Anfrage ein.",
   },
   {
     f: "Was muss ich beim Datenschutz beachten?",
@@ -59,7 +59,7 @@ export function Faq() {
           </div>
           <div className="divide-y divide-line rounded-[22px] bg-surface px-5 shadow-[var(--shadow-soft)] sm:px-7">
             {fragen.map((q) => (
-              <details key={q.f} className="group">
+              <details key={q.f} className="faq-eintrag group">
                 <summary className="flex min-h-[64px] cursor-pointer items-center justify-between gap-4 py-4 text-[16.5px] font-medium">
                   <h3 className="text-[16.5px] leading-snug tracking-[-0.01em]">{q.f}</h3>
                   <span

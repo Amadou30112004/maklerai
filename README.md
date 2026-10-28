@@ -1,7 +1,8 @@
 # MaklerAI Landingpage
 
 Landingpage für MaklerAI: Digitalisierung des Innendienstes für kleine Versicherungsmaklerbüros.
-Next.js (App Router), TypeScript, Tailwind CSS, Framer Motion, Zod.
+Next.js (App Router), TypeScript, Tailwind CSS, Zod. Bewegungen laufen über CSS und einen kleinen
+IntersectionObserver (`src/components/ScrollEffekte.tsx`), ohne zusätzliche Bibliothek.
 
 ## Starten
 
@@ -23,33 +24,46 @@ Weitere Befehle:
 ## Platzhalter ausfüllen
 
 Alle offenen Angaben stehen zentral in `src/config/site.ts` unter `platzhalter`
-(USt-IdNr., Telefon, Hosting-Anbieter, Stand der Datenschutzerklärung).
-Dort wird auch der Markenname gepflegt (`name`), er steht nirgends fest im Text.
+(USt-IdNr., Hosting-Anbieter, Stand der Datenschutzerklärung).
+Dort werden auch Markenname (`name`), Anschrift und Telefon gepflegt, sie stehen nirgends fest im Text.
 
 Weitere Platzhalter in eckigen Klammern stehen direkt in `src/app/datenschutz/page.tsx`
-(Speicherdauer, Aufsichtsbehörde, Drittlandhinweis). Impressum und Datenschutz vor dem Livegang rechtlich prüfen lassen.
+(Speicherdauer, Auftragsverarbeitung mit Google, Aufsichtsbehörde, Drittlandhinweis).
+Impressum und Datenschutz vor dem Livegang rechtlich prüfen lassen.
 
-**Foto:** `public/amadou-jalloh.jpg` ist ein quadratischer Ausschnitt aus dem Bewerbungsfoto (288 × 288 px).
-Zum Austauschen ein neues quadratisches Foto (mindestens 200 × 200 px) unter genau diesem Namen ablegen.
+**Foto:** `public/amadou-jalloh.jpg` (quadratisch, 288 × 288 px). Zum Austauschen ein neues quadratisches Foto
+(mindestens 200 × 200 px) unter genau diesem Namen ablegen.
 
-## Anfragen
+## Anfragen in Google Sheets
 
-Das Formular schickt an `POST /api/pilot`. Lokal wird jede Anfrage an `data/pilot-anfragen.json`
-angehängt (Ordner ist in `.gitignore`) und in der Konsole ausgegeben.
-Spam-Schutz: verstecktes Honeypot-Feld und Mindestzeit von 4 Sekunden zwischen Laden und Absenden.
+Das Formular schickt an `POST /api/pilot`. Die Route prüft die Angaben und den Spam-Schutz
+(verstecktes Feld, Mindestzeit 4 Sekunden) und gibt die Anfrage an ein Google Sheet weiter.
+Das Sheet schickt Ihnen zusätzlich eine Mail.
 
-## Mailversand über Resend aktivieren
+So richten Sie das ein:
 
-1. Konto bei https://resend.com anlegen und Domain verifizieren.
-2. `.env.example` nach `.env.local` kopieren.
-3. `RESEND_API_KEY` eintragen, optional `RESEND_FROM` mit verifizierter Absenderadresse.
-4. Server neu starten. Jede Anfrage geht dann zusätzlich an amadou@jalloh.net.
+1. **Sheet anlegen:** In Google Drive eine neue Tabelle anlegen, zum Beispiel „MaklerAI Anfragen“.
+2. **Script einfügen:** In der Tabelle Erweiterungen, Apps Script öffnen. Den Inhalt von
+   `docs/google-apps-script.gs` hineinkopieren und speichern.
+3. **Schlüssel setzen:** Einen langen, zufälligen Schlüssel ausdenken (mindestens 32 Zeichen) und
+   im Script bei `SECRET` eintragen.
+4. **Als Web-App bereitstellen:** Bereitstellen, Neue Bereitstellung, Typ Web-App.
+   Ausführen als: Ich. Zugriff: Jeder. Beim ersten Mal die Berechtigungen bestätigen.
+   Die angezeigte URL kopieren.
+5. **Eintragen:** `.env.example` nach `.env.local` kopieren, dort `GOOGLE_SHEETS_WEBHOOK_URL` (die URL)
+   und `GOOGLE_SHEETS_SECRET` (derselbe Schlüssel wie im Script) eintragen. Server neu starten.
+6. **Einmal testen:** Das Formular auf der Seite absenden. In der Tabelle erscheint eine neue Zeile
+   im Blatt „Anfragen“, und an amadou@jalloh.net geht eine Mail.
+
+Ohne URL wird in der Entwicklung (`npm run dev`) jede Anfrage in `data/pilot-anfragen.json` gespeichert
+(Ordner ist in `.gitignore`). In der Produktion ohne URL oder bei einem Fehler sieht der Kunde eine
+Meldung mit E-Mail-Adresse und Telefonnummer. Ins Log werden nur Büroname und Zeitpunkt geschrieben.
+
+Ändern Sie später das Script, müssen Sie unter Bereitstellungen verwalten eine neue Version bereitstellen.
 
 ## Später auf Vercel
 
 1. Repo bei https://vercel.com importieren, Framework wird erkannt.
-2. Unter Settings, Environment Variables `RESEND_API_KEY` (und `RESEND_FROM`) setzen.
+2. Unter Settings, Environment Variables `GOOGLE_SHEETS_WEBHOOK_URL` und `GOOGLE_SHEETS_SECRET` setzen.
 3. Region auf Frankfurt (`fra1`) stellen, passend zum Versprechen „Hosting in der EU“.
-4. Wichtig: Auf Vercel ist das Dateisystem nicht dauerhaft. Die lokale JSON-Speicherung funktioniert dort nicht,
-   dann über Resend versenden oder eine Datenbank anbinden.
-5. Domain verbinden und `url` in `src/config/site.ts` prüfen.
+4. Domain verbinden und `url` in `src/config/site.ts` prüfen.

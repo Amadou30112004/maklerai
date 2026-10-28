@@ -142,9 +142,13 @@ export function AnfrageFormular() {
           <span className="sr-only"> (öffnet in neuem Tab)</span>
         </a>
         <p className="mt-5 text-[14px] text-ink-2">
-          Lieber per Mail?{" "}
+          Lieber direkt?{" "}
           <a href={`mailto:${site.person.email}`} className="text-ink underline underline-offset-4">
             {site.person.email}
+          </a>
+          {" · "}
+          <a href={site.person.telefonLink} className="whitespace-nowrap text-ink underline underline-offset-4">
+            {site.person.telefonAnzeige}
           </a>
         </p>
       </div>

@@ -1,9 +1,14 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { site } from "@/config/site";
-import { anfrageSchema, MINDESTZEIT_MS, spamSchema, type Anfrage } from "@/lib/schema";
+import { anfrageSchema, loesungNamen, MINDESTZEIT_MS, spamSchema, type Anfrage } from "@/lib/schema";
 
 const DATEI = path.join(process.cwd(), "data", "pilot-anfragen.json");
+const TIMEOUT_MS = 10_000;
+
+const FEHLER_MELDUNG = `Das hat leider nicht geklappt. Schreiben Sie uns gern direkt an ${site.person.email} oder rufen Sie an: ${site.person.telefonAnzeige}.`;
+
+type Eintrag = Omit<Anfrage, "interessen"> & { interessen: string[]; eingegangen: string };
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -34,25 +39,57 @@ export async function POST(request: Request) {
     return Response.json({ fehler }, { status: 422 });
   }
 
-  const eintrag = { ...r.data, eingegangen: new Date().toISOString() };
+  const eintrag: Eintrag = {
+    ...r.data,
+    interessen: r.data.interessen.map((id) => loesungNamen[id]),
+    eingegangen: new Date().toISOString(),
+  };
 
   try {
-    await speichern(eintrag);
+    const url = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+    if (url) {
+      await anSheetsSenden(url, eintrag);
+    } else if (process.env.NODE_ENV === "development") {
+      await lokalSpeichern(eintrag);
+    } else {
+      throw new Error("GOOGLE_SHEETS_WEBHOOK_URL ist nicht gesetzt");
+    }
   } catch (err) {
-    console.error("[pilot] Speichern fehlgeschlagen", err);
-    return Response.json(
-      { meldung: `Das hat leider nicht geklappt. Schreiben Sie uns gern direkt an ${site.person.email}.` },
-      { status: 500 },
-    );
+    // Keine Kundendaten ins Log, nur Büro und Zeitpunkt
+    console.error("[pilot] Anfrage konnte nicht gespeichert werden", {
+      buero: eintrag.buero,
+      eingegangen: eintrag.eingegangen,
+      grund: err instanceof Error ? err.message : "unbekannt",
+    });
+    return Response.json({ meldung: FEHLER_MELDUNG }, { status: 500 });
   }
 
-  console.log("[pilot] Neue Anfrage", eintrag);
-  await mailSenden(eintrag);
-
+  console.log("[pilot] Neue Anfrage gespeichert", { buero: eintrag.buero, eingegangen: eintrag.eingegangen });
   return Response.json({ ok: true });
 }
 
-async function speichern(eintrag: Anfrage & { eingegangen: string }) {
+async function anSheetsSenden(url: string, eintrag: Eintrag) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret: process.env.GOOGLE_SHEETS_SECRET ?? "", ...eintrag }),
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    const json = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+    if (!res.ok || json?.ok !== true) {
+      throw new Error(`Google Sheets hat nicht bestätigt (Status ${res.status})`);
+    }
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Nur in der Entwicklung ohne Sheets-URL
+async function lokalSpeichern(eintrag: Eintrag) {
   await mkdir(path.dirname(DATEI), { recursive: true });
   let liste: unknown[] = [];
   try {
@@ -63,38 +100,4 @@ async function speichern(eintrag: Anfrage & { eingegangen: string }) {
   }
   liste.push(eintrag);
   await writeFile(DATEI, JSON.stringify(liste, null, 2), "utf8");
-}
-
-// Vorbereitet, aber nur aktiv, wenn RESEND_API_KEY gesetzt ist.
-async function mailSenden(eintrag: Anfrage & { eingegangen: string }) {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return;
-  const from = process.env.RESEND_FROM ?? `${site.name} <onboarding@resend.dev>`;
-  const zeilen = [
-    `Name: ${eintrag.name}`,
-    `Maklerbüro: ${eintrag.buero}`,
-    `E-Mail: ${eintrag.email}`,
-    `Telefon: ${eintrag.telefon || "nicht angegeben"}`,
-    `Bürogröße: ${eintrag.groesse}`,
-    `Schwerpunkt: ${eintrag.schwerpunkt}`,
-    `Interessen: ${eintrag.interessen.join(", ")}`,
-    `Zeitfresser: ${eintrag.zeitfresser || "nicht angegeben"}`,
-    `Eingegangen: ${eintrag.eingegangen}`,
-  ];
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to: [site.person.email],
-        reply_to: eintrag.email,
-        subject: `Neue Anfrage Erstgespräch: ${eintrag.buero}`,
-        text: zeilen.join("\n"),
-      }),
-    });
-    if (!res.ok) console.error("[pilot] Resend Fehler", res.status, await res.text());
-  } catch (err) {
-    console.error("[pilot] Resend nicht erreichbar", err);
-  }
 }

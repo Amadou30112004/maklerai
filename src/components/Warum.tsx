@@ -1,7 +1,7 @@
 import { site } from "@/config/site";
 import { Container, IconKachel, SectionHead } from "./ui/Basis";
 import { IconKompass, IconPinsel, IconVertrag } from "./ui/Icons";
-import { Reveal } from "./ui/Reveal";
+import { Reveal, staffel } from "./ui/Reveal";
 
 const punkte = [
   {
@@ -11,7 +11,7 @@ const punkte = [
   },
   {
     icon: IconVertrag,
-    titel: "Versicherergerecht",
+    titel: "So, wie der Versicherer es braucht",
     text: "Pflichtangaben je Sparte, abgestimmt auf die Anforderungen der Versicherer.",
   },
   {
@@ -28,16 +28,14 @@ export function Warum() {
         <Reveal>
           <SectionHead id="warum-titel" eyebrow="Unterschied" titel={`Warum ${site.name}`} />
         </Reveal>
-        <ul className="mt-10 grid gap-5 md:grid-cols-3">
+        <ul data-stagger="" className="mt-10 grid gap-5 md:grid-cols-3">
           {punkte.map((p, i) => (
-            <li key={p.titel}>
-              <Reveal delay={i * 0.05} className="h-full">
-                <div className="h-full rounded-[20px] border border-line bg-surface/60 p-6 sm:p-7">
-                  <IconKachel icon={p.icon} klein />
-                  <h3 className="mt-5 text-[21px]">{p.titel}</h3>
-                  <p className="mt-2.5 text-[15.5px] leading-relaxed text-ink-2">{p.text}</p>
-                </div>
-              </Reveal>
+            <li key={p.titel} style={staffel(i)}>
+              <div className="h-full rounded-[20px] border border-line bg-surface/60 p-6 sm:p-7">
+                <IconKachel icon={p.icon} klein />
+                <h3 className="mt-5 text-[21px]">{p.titel}</h3>
+                <p className="mt-2.5 text-[15.5px] leading-relaxed text-ink-2">{p.text}</p>
+              </div>
             </li>
           ))}
         </ul>

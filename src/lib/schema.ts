@@ -13,6 +13,13 @@ export const loesungIds = ["schadenmeldung", "aenderungen", "whatsapp"] as const
 
 export type LoesungId = (typeof loesungIds)[number];
 
+// Lesbare Namen, z. B. für das Google Sheet und die Auswahlkacheln
+export const loesungNamen: Record<LoesungId, string> = {
+  schadenmeldung: "Schadenmeldung",
+  aenderungen: "Kundenänderungen",
+  whatsapp: "WhatsApp für Service und Vertrieb",
+};
+
 export const schritt1Schema = z.object({
   groesse: z.enum(bueroGroessen, { error: "Bitte wählen Sie die Größe Ihres Büros." }),
   schwerpunkt: z.enum(schwerpunkte, { error: "Bitte wählen Sie Ihren Schwerpunkt." }),

@@ -1,10 +1,23 @@
 import { Container, Eyebrow } from "./ui/Basis";
-import { Reveal } from "./ui/Reveal";
+import { Reveal, staffel } from "./ui/Reveal";
 
 const stationen = [
   { nr: "1", titel: "Kunde meldet unvollständig", text: "Fotos fehlen, Schadentag unklar." },
   { nr: "2", titel: "Büro fragt nach", text: "Anruf, Mail, Messenger." },
   { nr: "3", titel: "Versicherer fordert nach", text: "Vertragsnummer, Belege, Details." },
+];
+
+// Bögen zwischen den Stationen (oben 270°, rechts unten 30°, links unten 150°) und die Pfeilspitzen an ihrem Ende
+const boegen = [
+  { d: "M 248 58 A 150 150 0 0 1 340 140", spitze: "M 339.6 139.1 L 340 140" },
+  { d: "M 300 312 A 150 150 0 0 1 100 312", spitze: "M 100.9 312.4 L 100 312" },
+  { d: "M 60 140 A 150 150 0 0 1 152 58", spitze: "M 151.1 58.4 L 152 58" },
+];
+
+const positionen = [
+  "left-1/2 top-[12.5%]",
+  "left-[82.5%] top-[68.75%]",
+  "left-[17.5%] top-[68.75%]",
 ];
 
 export function Kreislauf() {
@@ -15,15 +28,15 @@ export function Kreislauf() {
           <Reveal>
             <Eyebrow>Das Problem</Eyebrow>
             <h2 id="kreislauf-titel" className="mt-4 text-[32px] leading-[1.08] sm:text-[44px]">
-              Jede unvollständige Meldung kostet Sie drei Runden.
+              Eine unvollständige Meldung, und das Hin und Her beginnt.
             </h2>
             <p className="mt-5 max-w-[520px] text-[17px] leading-relaxed text-ink-2 sm:text-lg">
-              Fotos fehlen, der Schadentag ist unklar, die Vertragsnummer fehlt. Jede Lücke bedeutet eine
-              Rückfrage, beim Kunden oder beim Versicherer. Und jede Rückfrage kostet Ihr Büro Zeit.
+              Drei Fotos per WhatsApp, die Vertragsnummer fehlt, der Schadentag ist unklar. Sie fragen beim Kunden nach,
+              der Versicherer fragt bei Ihnen nach. Bis die Meldung vollständig ist, vergehen Tage.
             </p>
           </Reveal>
 
-          <Reveal delay={0.06}>
+          <div>
             <KreisVisual />
             <ol className="sr-only">
               {stationen.map((s) => (
@@ -31,7 +44,7 @@ export function Kreislauf() {
               ))}
               <li>zurück zum Kunden</li>
             </ol>
-          </Reveal>
+          </div>
         </div>
       </Container>
     </section>
@@ -41,7 +54,7 @@ export function Kreislauf() {
 function KreisVisual() {
   // Drei Stationen auf einem Kreis, verbunden mit Pfeilen im Uhrzeigersinn
   return (
-    <div aria-hidden="true" className="relative mx-auto aspect-square w-full max-w-[460px]">
+    <div data-anim="" aria-hidden="true" className="kreis relative mx-auto aspect-square w-full max-w-[460px]">
       <svg viewBox="0 0 400 400" className="absolute inset-0 size-full">
         <defs>
           <linearGradient id="kreis-grad" x1="0" y1="0" x2="1" y2="1">
@@ -54,31 +67,42 @@ function KreisVisual() {
           </marker>
         </defs>
         <circle cx="200" cy="200" r="150" fill="none" stroke="#E2DED6" strokeWidth="1.5" strokeDasharray="3 7" />
-        {/* Bögen zwischen den Stationen (oben 270°, rechts unten 30°, links unten 150°) */}
-        <path d="M 248 58 A 150 150 0 0 1 340 140" fill="none" stroke="url(#kreis-grad)" strokeWidth="2.5" strokeLinecap="round" markerEnd="url(#pfeil)" />
-        <path d="M 300 312 A 150 150 0 0 1 100 312" fill="none" stroke="url(#kreis-grad)" strokeWidth="2.5" strokeLinecap="round" markerEnd="url(#pfeil)" />
-        <path d="M 60 140 A 150 150 0 0 1 152 58" fill="none" stroke="url(#kreis-grad)" strokeWidth="2.5" strokeLinecap="round" markerEnd="url(#pfeil)" />
+        {boegen.map((b, i) => (
+          <g key={b.d} style={staffel(i)}>
+            <path
+              d={b.d}
+              pathLength={1}
+              className="kreis-bogen"
+              fill="none"
+              stroke="url(#kreis-grad)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <path d={b.spitze} className="kreis-spitze" fill="none" stroke="none" markerEnd="url(#pfeil)" />
+          </g>
+        ))}
         <circle cx="200" cy="200" r="78" fill="url(#kreis-grad)" opacity="0.1" />
       </svg>
 
-      <div className="absolute left-1/2 top-[40%] w-[36%] -translate-x-1/2 -translate-y-1/2 text-center">
-        <p className="text-[30px] font-medium leading-none tracking-[-0.03em] sm:text-[44px]">3×</p>
-        <p className="mt-1.5 text-[11px] leading-snug text-ink-2 sm:text-[13px]">Rückfragen für eine einzige Meldung</p>
+      <div className="absolute left-1/2 top-[44%] w-[40%] -translate-x-1/2 -translate-y-1/2 text-center">
+        <p className="text-[22px] font-medium leading-tight tracking-[-0.03em] sm:text-[32px]">Hin und Her</p>
+        <p className="mt-1.5 text-[11px] leading-snug text-ink-2 sm:text-[13px]">bis alles vollständig ist</p>
       </div>
 
-      <Station className="left-1/2 top-[12.5%] -translate-x-1/2 -translate-y-1/2" {...stationen[0]} />
-      <Station className="left-[82.5%] top-[68.75%] -translate-x-1/2 -translate-y-1/2" {...stationen[1]} />
-      <Station className="left-[17.5%] top-[68.75%] -translate-x-1/2 -translate-y-1/2" {...stationen[2]} />
-    </div>
-  );
-}
-
-function Station({ nr, titel, text, className }: { nr: string; titel: string; text: string; className: string }) {
-  return (
-    <div className={`absolute w-[38%] max-w-[190px] rounded-[16px] sm:w-[44%] bg-surface p-3 shadow-[var(--shadow-float)] sm:p-3.5 ${className}`}>
-      <span className="bg-grad grid size-6 place-items-center rounded-full text-[11px] font-medium text-white">{nr}</span>
-      <p className="mt-2 text-[12px] font-medium leading-snug sm:text-[13px]">{titel}</p>
-      <p className="mt-1 hidden text-[11.5px] leading-snug text-ink-2 sm:block">{text}</p>
+      {stationen.map((s, i) => (
+        <div key={s.nr} className={`absolute -translate-x-1/2 -translate-y-1/2 ${positionen[i]} w-[38%] max-w-[190px] sm:w-[44%]`}>
+          <div
+            style={staffel(i)}
+            className="kreis-station rounded-[16px] bg-surface p-3 shadow-[var(--shadow-float)] sm:p-3.5"
+          >
+            <span className="bg-grad grid size-6 place-items-center rounded-full text-[11px] font-medium text-white">
+              {s.nr}
+            </span>
+            <p className="mt-2 text-[12px] font-medium leading-snug sm:text-[13px]">{s.titel}</p>
+            <p className="mt-1 hidden text-[11.5px] leading-snug text-ink-2 sm:block">{s.text}</p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

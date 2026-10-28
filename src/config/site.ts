@@ -1,9 +1,11 @@
 // Zentrale Angaben der Seite. Markenname und Kontakt nur hier pflegen.
 // Platzhalter in eckigen Klammern sind noch offen und vor dem Livegang zu ersetzen.
 
+// Markenname ist noch nicht final. Nie hart im Text verwenden, immer site.name.
+const name = "MaklerAI";
+
 export const site = {
-  // Markenname ist noch nicht final. Nie hart im Text verwenden, immer site.name.
-  name: "MaklerAI",
+  name,
   domain: "maklerai.de",
   url: "https://maklerai.de",
   claim: "Digitalisierung für den Innendienst von Maklerbüros",
@@ -17,6 +19,11 @@ export const site = {
     foto: "/amadou-jalloh.jpg",
     strasse: "Beethovenstr. 21",
     ort: "78054 Villingen-Schwenningen",
+    telefonAnzeige: "0176 45846156",
+    telefonLink: "tel:+4917645846156",
+    whatsappLink:
+      "https://wa.me/4917645846156?text=" +
+      encodeURIComponent("Hallo Herr Jalloh, ich interessiere mich für ein Erstgespräch zu " + name + "."),
   },
 
   // Google-Kalender-Buchungsseite von amadou@jalloh.net
@@ -24,7 +31,6 @@ export const site = {
 
   platzhalter: {
     ustId: "[USt-IdNr. falls vorhanden]",
-    telefon: "[TELEFON]",
     hoster: "[HOSTING-ANBIETER, z. B. Vercel Inc.]",
     datum: "[STAND DATUM]",
   },
