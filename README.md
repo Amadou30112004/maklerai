@@ -29,8 +29,8 @@ Dort wird auch der Markenname gepflegt (`name`), er steht nirgends fest im Text.
 Weitere Platzhalter in eckigen Klammern stehen direkt in `src/app/datenschutz/page.tsx`
 (Speicherdauer, Aufsichtsbehörde, Drittlandhinweis). Impressum und Datenschutz vor dem Livegang rechtlich prüfen lassen.
 
-**Foto:** `public/amadou-jalloh.jpg` ist aktuell ein Platzhalterbild mit Initialen.
-Echtes Foto (quadratisch, mindestens 200 × 200 px) unter genau diesem Namen ablegen.
+**Foto:** `public/amadou-jalloh.jpg` ist ein quadratischer Ausschnitt aus dem Bewerbungsfoto (288 × 288 px).
+Zum Austauschen ein neues quadratisches Foto (mindestens 200 × 200 px) unter genau diesem Namen ablegen.
 
 ## Anfragen
 
