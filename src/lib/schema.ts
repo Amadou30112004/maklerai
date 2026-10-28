@@ -9,13 +9,7 @@ export const bueroGroessen = [
 
 export const schwerpunkte = ["Privatkunden", "Gewerbekunden", "beides"] as const;
 
-export const loesungIds = [
-  "schadenmeldung",
-  "whatsapp",
-  "ablage",
-  "aenderungen",
-  "dokumente",
-] as const;
+export const loesungIds = ["schadenmeldung", "aenderungen", "whatsapp"] as const;
 
 export type LoesungId = (typeof loesungIds)[number];
 

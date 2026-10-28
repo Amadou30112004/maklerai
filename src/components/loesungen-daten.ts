@@ -1,19 +1,13 @@
 import type { ComponentType, SVGProps } from "react";
 import type { LoesungId } from "@/lib/schema";
-import {
-  IconDokumentBlitz,
-  IconKlammerUhr,
-  IconOrdnerPfeil,
-  IconPersonStift,
-  IconSprechblaseFunken,
-} from "./ui/Icons";
+import { IconDokumentBlitz, IconPersonStift, IconSprechblaseFunken } from "./ui/Icons";
 
 export type Loesung = {
   id: LoesungId;
   kurz: string;
   titel: string;
   text: string;
-  punkte: [string, string, string];
+  punkte: string[];
   icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
@@ -27,22 +21,6 @@ export const loesungen: Loesung[] = [
     icon: IconDokumentBlitz,
   },
   {
-    id: "whatsapp",
-    kurz: "WhatsApp-Kanal",
-    titel: "WhatsApp-Kanal für Ihr Büro",
-    text: "Ein offizieller WhatsApp-Kanal für Ihr Büro statt Kundenchats auf privaten Handys. Eingehende Nachrichten werden sortiert, die KI schlägt Antworten vor, Ihr Team prüft und sendet.",
-    punkte: ["Ein Kanal für das ganze Team", "Antwortentwürfe per KI", "Entwürfe speichern und freigeben"],
-    icon: IconSprechblaseFunken,
-  },
-  {
-    id: "ablage",
-    kurz: "Dokumentenablage",
-    titel: "Automatische Dokumentenablage",
-    text: "Policen, Nachträge und Schreiben vom Versicherer werden erkannt: Kunde, Vertragsnummer, Sparte. Danach landen sie automatisch im richtigen Kundenordner, in OneDrive oder Google Drive.",
-    punkte: ["Erkennt Vertragsnummer und Kunde", "Legt im richtigen Ordner ab", "Sie behalten den Überblick"],
-    icon: IconOrdnerPfeil,
-  },
-  {
     id: "aenderungen",
     kurz: "Kundenänderungen",
     titel: "Kundenänderungen per Link",
@@ -51,11 +29,17 @@ export const loesungen: Loesung[] = [
     icon: IconPersonStift,
   },
   {
-    id: "dokumente",
-    kurz: "Dokumente anfordern",
-    titel: "Dokumente anfordern",
-    text: "Fehlende Unterlagen per Link anfordern, mit automatischer Erinnerung. Was hochgeladen wird, landet sortiert bei Ihnen.",
-    punkte: ["Ein Link pro Anfrage", "Erinnerung automatisch", "Eingang sortiert"],
-    icon: IconKlammerUhr,
+    id: "whatsapp",
+    kurz: "WhatsApp für Service und Vertrieb",
+    titel: "WhatsApp für Ihr Büro: Service und Vertrieb",
+    text: "Ihre Kunden lesen WhatsApp, nicht jede E-Mail. Wir richten Ihrem Büro einen offiziellen WhatsApp-Kanal ein, statt Kundenchats auf privaten Handys. Im Service sortiert die KI eingehende Nachrichten und schlägt Antworten vor. Im Vertrieb erreichen Sie Ihre Kunden mit automatisierten Newslettern und gezielten Aktionen, dort wo sie sowieso lesen.",
+    punkte: [
+      "Ein Kanal für das ganze Team",
+      "Antwortentwürfe per KI, Ihr Team prüft und sendet",
+      "Automatisierte Newsletter per WhatsApp",
+      "Vertriebsaktionen an ausgewählte Kundengruppen",
+      "Nur an Kunden, die zugestimmt haben",
+    ],
+    icon: IconSprechblaseFunken,
   },
 ];

@@ -40,12 +40,12 @@ const fragen: { f: string; a: string }[] = [
     a: "Wir nutzen die offizielle WhatsApp-Business-Plattform, keine privaten Handys. Die datenschutzrechtliche Einordnung für Ihr Büro klären wir vor dem Start gemeinsam mit Ihnen.",
   },
   {
-    f: "Prüft die KI meine Verträge?",
-    a: "Nein. Die KI erkennt, sortiert und bereitet vor. Prüfen und entscheiden bleibt bei Ihnen.",
+    f: "Darf ich meinen Kunden Newsletter per WhatsApp schicken?",
+    a: "Ja, wenn Ihre Kunden vorher zugestimmt haben. Wir richten den Newsletter so ein, dass nur Kunden mit Einwilligung ihn bekommen und sich jederzeit abmelden können.",
   },
   {
-    f: "Brauchen Sie Zugriff auf meine Ablage?",
-    a: "Nur für die Dokumentenablage, und nur auf die Ordner, die Sie freigeben. Alle anderen Lösungen funktionieren ohne Zugriff.",
+    f: "Prüft die KI meine Verträge?",
+    a: "Nein. Die KI erkennt, sortiert und bereitet vor. Prüfen und entscheiden bleibt bei Ihnen.",
   },
 ];
 

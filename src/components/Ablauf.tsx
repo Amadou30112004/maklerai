@@ -1,4 +1,3 @@
-import { site } from "@/config/site";
 import { Container, SectionHead } from "./ui/Basis";
 import { Reveal } from "./ui/Reveal";
 
@@ -47,25 +46,6 @@ export function Ablauf() {
             </li>
           ))}
         </ol>
-
-        <Reveal>
-          <div className="mt-6 grid overflow-hidden rounded-[20px] border border-line md:grid-cols-2">
-            <div className="bg-surface-2 p-6 sm:p-7">
-              <p className="text-[12px] font-medium uppercase tracking-[0.1em] text-ink-2">Vorher</p>
-              <p className="mt-3 text-[17px] leading-relaxed">
-                <span className="font-medium">Heute:</span> Mail, Anruf, Fotos per Messenger, Rückfrage, alles von
-                Hand zusammensetzen.
-              </p>
-            </div>
-            <div className="bg-surface p-6 sm:p-7">
-              <p className="text-[12px] font-medium uppercase tracking-[0.1em] text-[#B23A12]">Nachher</p>
-              <p className="mt-3 text-[17px] leading-relaxed">
-                <span className="font-medium">Mit {site.name}:</span> ein Link, eine vollständige Meldung, ein Klick
-                zur Freigabe.
-              </p>
-            </div>
-          </div>
-        </Reveal>
       </Container>
     </section>
   );

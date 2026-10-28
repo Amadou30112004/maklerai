@@ -1,16 +1,20 @@
 import type { ReactNode } from "react";
 import { loesungen, type Loesung } from "./loesungen-daten";
 import { Container, IconKachel, SectionHead } from "./ui/Basis";
-import { IconHaken, IconHakenKreis, IconPdf, IconPfeilRechts } from "./ui/Icons";
+import { IconHaken, IconPdf, IconPfeilRechts } from "./ui/Icons";
 import { Reveal } from "./ui/Reveal";
 import type { LoesungId } from "@/lib/schema";
 
 const vorschauen: Record<LoesungId, ReactNode> = {
   schadenmeldung: <VorschauSchaden />,
-  whatsapp: <VorschauChat />,
-  ablage: <VorschauAblage />,
   aenderungen: <VorschauAenderung />,
-  dokumente: <VorschauDokumente />,
+  whatsapp: <VorschauWhatsApp />,
+};
+
+// Layout im Raster: Schadenmeldung zwei Spalten, WhatsApp über die volle Breite
+const spalten: Partial<Record<LoesungId, string>> = {
+  schadenmeldung: "md:col-span-2",
+  whatsapp: "md:col-span-2 lg:col-span-3",
 };
 
 export function Loesungen() {
@@ -21,7 +25,7 @@ export function Loesungen() {
           <SectionHead
             id="loesungen-titel"
             eyebrow="Lösungen"
-            titel="Fünf Automationen. Ein Innendienst, der mitdenkt."
+            titel="Drei Automationen. Ein Innendienst, der mitdenkt."
             text="Wählen Sie, womit Ihr Büro startet. Wir richten es ein, Sie arbeiten weiter wie gewohnt."
             center
           />
@@ -29,9 +33,9 @@ export function Loesungen() {
 
         <ul className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {loesungen.map((l, i) => (
-            <li key={l.id} className={`min-w-0 ${i === 0 ? "md:col-span-2" : ""}`}>
+            <li key={l.id} className={`min-w-0 ${spalten[l.id] ?? ""}`}>
               <Reveal delay={(i % 3) * 0.05} className="h-full">
-                <Karte loesung={l} gross={i === 0} />
+                <Karte loesung={l} gross={!!spalten[l.id]} breit={l.id === "whatsapp"} />
               </Reveal>
             </li>
           ))}
@@ -51,11 +55,11 @@ export function Loesungen() {
   );
 }
 
-function Karte({ loesung: l, gross }: { loesung: Loesung; gross: boolean }) {
+function Karte({ loesung: l, gross, breit = false }: { loesung: Loesung; gross: boolean; breit?: boolean }) {
   return (
     <article
       className={`group flex h-full flex-col rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out sm:p-7 motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)] ${
-        gross ? "lg:grid lg:grid-cols-[1fr_1.05fr] lg:gap-8" : ""
+        breit ? "lg:grid lg:grid-cols-[1fr_1.25fr] lg:gap-10 lg:p-9" : gross ? "lg:grid lg:grid-cols-[1fr_1.05fr] lg:gap-8" : ""
       }`}
     >
       <div className="flex min-w-0 flex-col">
@@ -135,24 +139,38 @@ function VorschauChat() {
   );
 }
 
-function VorschauAblage() {
+function VorschauNewsletter() {
   return (
     <Mini className="max-w-[340px]">
-      <div className="flex items-center gap-2 rounded-[10px] bg-bg px-2.5 py-2">
-        <IconPdf className="size-4 shrink-0 text-orange-3" />
-        <span className="truncate">Nachtrag_Wohngebaeude.pdf</span>
+      <div className="flex items-center justify-between border-b border-line pb-2.5">
+        <span className="text-[11px] uppercase tracking-[0.08em] text-ink-2">Newsletter per WhatsApp</span>
+        <span className="rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10.5px] font-medium text-[#B23A12]">geplant</span>
       </div>
-      <div className="my-1.5 flex justify-center text-ink-2">
-        <IconPfeilRechts className="size-4 rotate-90" />
-      </div>
-      <div className="flex items-center justify-between gap-2 rounded-[10px] border border-line px-2.5 py-2">
-        <span className="truncate">Kunden / [Name] / Wohngebäude</span>
-        <span className="flex shrink-0 items-center gap-1 font-medium text-[#B23A12]">
-          <IconHakenKreis className="size-4" />
-          Abgelegt
+      <div className="mt-3 ml-auto max-w-[94%] rounded-[12px] rounded-br-[4px] bg-[#FFF1E8] px-3 py-2.5 leading-snug">
+        Guten Morgen, Frau Becker. Die Unwettersaison beginnt. Ist Ihr Haus gegen Starkregen abgesichert? Wir prüfen
+        das gern kurz für Sie.
+        <span className="mt-2 block rounded-[8px] bg-surface py-1.5 text-center font-medium text-[#B23A12]">
+          Rückruf anfragen
         </span>
       </div>
+      <div className="mt-3 space-y-1 text-[11.5px] text-ink-2">
+        <p>Empfänger: Kunden mit Einwilligung, Sparte Wohngebäude</p>
+        <p>Versand: Dienstag, 9:00 Uhr</p>
+      </div>
     </Mini>
+  );
+}
+
+function VorschauWhatsApp() {
+  return (
+    <div className="grid w-full items-center gap-4 sm:grid-cols-2">
+      <div className="flex justify-center">
+        <VorschauChat />
+      </div>
+      <div className="flex justify-center">
+        <VorschauNewsletter />
+      </div>
+    </div>
   );
 }
 
@@ -178,36 +196,3 @@ function VorschauAenderung() {
   );
 }
 
-function VorschauDokumente() {
-  const items = [
-    { t: "Personalausweis", ok: true },
-    { t: "Kontoauszug", ok: true },
-    { t: "Kaufbeleg Fahrrad", ok: false },
-  ];
-  return (
-    <Mini className="max-w-[340px]">
-      <div className="flex items-center justify-between">
-        <p className="font-medium">Unterlagen Familie [Name]</p>
-        <span className="text-[11px] text-ink-2">2 von 3</span>
-      </div>
-      <div className="mt-2 h-1 rounded-full bg-surface-2">
-        <div className="bg-grad h-1 w-2/3 rounded-full" />
-      </div>
-      <ul className="mt-2.5 space-y-1.5">
-        {items.map((i) => (
-          <li key={i.t} className="flex items-center gap-2">
-            <span
-              className={`grid size-4 place-items-center rounded-full ${
-                i.ok ? "bg-accent text-white" : "border border-line"
-              }`}
-            >
-              {i.ok && <IconHaken className="size-2.5" strokeWidth={3} />}
-            </span>
-            <span className={i.ok ? "" : "text-ink-2"}>{i.t}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-2.5 text-[11px] text-ink-2">Erinnerung gesendet</p>
-    </Mini>
-  );
-}

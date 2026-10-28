@@ -20,7 +20,7 @@ export function Footer() {
           <a href={`mailto:${site.person.email}`} className="text-ink-2 underline decoration-line underline-offset-4 can-hover:text-ink">
             {site.person.email}
           </a>
-          <p className="text-ink-2">{site.platzhalter.anschrift}</p>
+          <p className="text-ink-2">{site.person.anschrift}</p>
         </div>
         <nav aria-label="Rechtliches" className="text-[15px]">
           <p className="font-medium">Rechtliches</p>

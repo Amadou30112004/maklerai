@@ -23,7 +23,7 @@ Weitere Befehle:
 ## Platzhalter ausfüllen
 
 Alle offenen Angaben stehen zentral in `src/config/site.ts` unter `platzhalter`
-(Anschrift, USt-IdNr., Telefon, Hosting-Anbieter, Stand der Datenschutzerklärung).
+(USt-IdNr., Telefon, Hosting-Anbieter, Stand der Datenschutzerklärung).
 Dort wird auch der Markenname gepflegt (`name`), er steht nirgends fest im Text.
 
 Weitere Platzhalter in eckigen Klammern stehen direkt in `src/app/datenschutz/page.tsx`
