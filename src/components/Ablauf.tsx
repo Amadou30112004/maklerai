@@ -1,4 +1,4 @@
-import { Container, SectionHead } from "./ui/Basis";
+import { Container, PrimaryButton, SectionHead } from "./ui/Basis";
 import { Reveal, staffel } from "./ui/Reveal";
 
 const schritte = [
@@ -55,6 +55,19 @@ export function Ablauf() {
             </li>
           ))}
         </ol>
+
+        <Reveal>
+          <div className="mt-10 flex flex-col items-center gap-5 text-center lg:flex-row lg:justify-center lg:text-left">
+            <div className="flex flex-col items-center gap-4 lg:items-start">
+              <p className="text-[18px] font-medium tracking-[-0.01em]">Probieren Sie es selbst, am besten am Handy.</p>
+              <PrimaryButton href="/demo/schadenmeldung">Demo öffnen</PrimaryButton>
+            </div>
+            {/* QR-Code zur Demo, damit man sie vom Bildschirm direkt am Handy öffnen kann */}
+            <div className="hidden size-[112px] shrink-0 place-items-center rounded-[16px] border border-dashed border-line bg-surface p-3 text-center text-[11px] leading-snug text-ink-2 lg:grid">
+              [QR-CODE ZUR DEMO, nach Livegang erzeugen]
+            </div>
+          </div>
+        </Reveal>
       </Container>
     </section>
   );

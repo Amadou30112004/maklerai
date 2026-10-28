@@ -32,6 +32,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Tastatur verkleinert die Seite, statt Buttons zu verdecken
+  interactiveWidget: "resizes-content",
   themeColor: "#F5F3EF",
 };
 

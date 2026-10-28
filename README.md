@@ -61,6 +61,28 @@ Meldung mit E-Mail-Adresse und Telefonnummer. Ins Log werden nur Büroname und Z
 
 Ändern Sie später das Script, müssen Sie unter Bereitstellungen verwalten eine neue Version bereitstellen.
 
+## Demo Schadenmeldung
+
+Klickbarer Prototyp unter `/demo/schadenmeldung`, lokal http://localhost:3000/demo/schadenmeldung.
+Es wird nichts gespeichert oder versendet, alles bleibt im Browser. Beim Neuladen beginnt die Demo von vorn.
+Die Seite ist für Suchmaschinen gesperrt (`noindex`).
+
+- **Farbe des Büros:** über die drei Farbtupfer oben oder per Adresse, zum Beispiel
+  `/demo/schadenmeldung?farbe=gruen`. Möglich sind `blau` (Standard), `gruen` und `rot`.
+  Der Wechsel behält alle Eingaben.
+- **Für Gespräche:** Auf jedem Schritt füllt „Beispieldaten einfügen“ die gewählte Sparte (ohne Auswahl: Kfz)
+  mit erfundenen, vollständigen Angaben und drei erzeugten Beispielfotos. Danach nur noch „Weiter“ klicken,
+  so ist die Demo in unter einer Minute gezeigt.
+- **Ergebnis:** Nach dem Absenden zeigt die Demo die PDF-Vorschau (über „Als PDF speichern“ als A4 drucken)
+  und den E-Mail-Entwurf an den Versicherer.
+
+Technik: Felder je Sparte stehen als Daten in `src/lib/demo/sparten.ts`, neue Sparten kommen dort dazu.
+Prüfung in `src/lib/demo/schema.ts` und `vollstaendigkeit.ts`, Mailtext in `email.ts`, Tests in `demo.test.mjs`.
+
+**Offen:** Auf der Startseite ist neben dem Demo-Button ein Platzhalter `[QR-CODE ZUR DEMO, nach Livegang erzeugen]`.
+Nach dem Livegang einen QR-Code zur echten Demo-Adresse erzeugen und dort als Bild einsetzen
+(`src/components/Ablauf.tsx`).
+
 ## Später auf Vercel
 
 1. Repo bei https://vercel.com importieren, Framework wird erkannt.

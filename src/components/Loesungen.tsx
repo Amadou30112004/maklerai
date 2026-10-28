@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { loesungen, type Loesung } from "./loesungen-daten";
 import { Container, IconKachel, SectionHead } from "./ui/Basis";
@@ -83,6 +84,15 @@ function Karte({ loesung: l }: { loesung: Loesung }) {
             </li>
           ))}
         </ul>
+        {l.id === "schadenmeldung" && (
+          <Link
+            href="/demo/schadenmeldung"
+            className="group/demo mt-5 inline-flex min-h-[44px] items-center gap-2 self-start text-[15.5px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent"
+          >
+            Demo ausprobieren
+            <IconPfeilRechts className="size-4" />
+          </Link>
+        )}
       </div>
       <div
         aria-hidden="true"
@@ -200,16 +210,42 @@ function VorschauNewsletter() {
           geplant
         </span>
       </div>
-      <div className="mt-3 max-w-[94%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2.5 leading-snug">
-        Guten Morgen, Frau Becker. Die Unwettersaison beginnt. Ist Ihr Haus gegen Starkregen abgesichert? Wir prüfen
-        das gern kurz für Sie.
-        <span className="mt-2 block rounded-[8px] border border-line bg-surface py-1.5 text-center font-medium text-[#B23A12]">
-          Rückruf anfragen
-        </span>
+      {/* Aufbau wie eine WhatsApp-Vorlage: Titelbild, Überschrift, Themen, Fußzeile, Antwort-Buttons */}
+      <div className="mt-3 overflow-hidden rounded-[12px] rounded-tl-[4px] bg-bg leading-snug">
+        <div className="bg-grad relative flex h-[74px] items-end p-2.5 text-white">
+          <svg viewBox="0 0 48 32" className="absolute right-3 top-2.5 h-9 w-auto opacity-90" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M14 20a7 7 0 1 1 2-13.7A9 9 0 0 1 33 9a6 6 0 1 1 1 11z" />
+            <path d="m18 24-2 4M26 24l-2 4M34 24l-2 4" />
+          </svg>
+          <span className="text-[10.5px] font-medium uppercase tracking-[0.1em]">Büro-Post Herbst</span>
+        </div>
+        <div className="px-3 pb-2.5 pt-2.5">
+          <p className="text-[13px] font-semibold">Ihr Herbst-Check in drei Punkten</p>
+          <p className="mt-1.5">Guten Morgen, Frau Becker. Das ist diesen Herbst wichtig:</p>
+          <ul className="mt-1.5 space-y-1">
+            {[
+              ["Starkregen", "Ist Ihr Haus gegen Elementarschäden abgesichert?"],
+              ["Winterreifen", "Beim Wechsel prüfen wir gern Ihren Kfz-Vertrag mit."],
+              ["Neu bei uns", "Schäden melden Sie jetzt einfach per Link."],
+            ].map(([titel, text]) => (
+              <li key={titel} className="flex gap-1.5">
+                <span className="mt-[5px] size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                <span>
+                  <span className="font-semibold">{titel}:</span> {text}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[10.5px] text-ink-2">Ihr Maklerbüro · Abmelden mit STOP</p>
+        </div>
+        <div className="grid border-t border-line text-center font-medium text-[#B23A12]">
+          <span className="py-1.5">Termin vereinbaren</span>
+          <span className="border-t border-line py-1.5">Rückruf anfragen</span>
+        </div>
       </div>
       <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-[11.5px] text-ink-2">
         <dt>Empfänger:</dt>
-        <dd>Kunden mit Einwilligung, Sparte Wohngebäude</dd>
+        <dd>alle Privatkunden mit Einwilligung</dd>
         <dt>Versand:</dt>
         <dd>Dienstag, 9:00 Uhr</dd>
       </dl>

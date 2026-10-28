@@ -1,6 +1,7 @@
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { Container, Eyebrow, PrimaryButton } from "./ui/Basis";
-import { IconDokumentBlitz, IconFoto, IconPdf } from "./ui/Icons";
+import { IconDokumentBlitz, IconFoto, IconPdf, IconPfeilRechts } from "./ui/Icons";
 
 const sparten = ["Kfz", "Hausrat", "Wohngebäude", "Privathaftpflicht", "Glas", "weitere auf Anfrage"];
 
@@ -25,6 +26,13 @@ export function Hero() {
               <PrimaryButton href="#pilot" size="lg">
                 Kostenloses Erstgespräch
               </PrimaryButton>
+              <Link
+                href="/demo/schadenmeldung"
+                className="press inline-flex min-h-[48px] items-center gap-2 rounded-[12px] border border-line bg-surface px-5 text-[15px] font-medium can-hover:border-ink/30"
+              >
+                Schadenmeldung selbst ausprobieren
+                <IconPfeilRechts className="size-4" />
+              </Link>
               <p className="text-[13px] text-ink-2">
                 Kostenloses Erstgespräch · ohne Vertragsbindung · persönlich betreut
               </p>

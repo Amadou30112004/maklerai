@@ -351,6 +351,141 @@ details > summary::-webkit-details-marker {
   border-color: #b23a12;
 }
 
+/* Tippen soll sich wie eine App anfühlen: kein grauer Blitz, keine Verzögerung */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a,
+label,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* ------------------------------------------------------------------
+   Demo Schadenmeldung: Farbe des Beispielbüros über --marke
+   ------------------------------------------------------------------ */
+.demo-feld {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  border-radius: 12px;
+  border: 1px solid #cfd4da;
+  background: #fff;
+  padding: 13px 14px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #1d2733;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.demo-feld:focus {
+  outline: none;
+  border-color: var(--marke);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--marke) 18%, transparent);
+}
+.demo-feld[aria-invalid="true"] {
+  border-color: #a3271a;
+}
+.demo-feld::placeholder {
+  color: #8a939c;
+}
+
+.demo-kachel {
+  border-color: #d5d9de;
+  background: #fff;
+  color: #1d2733;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out,
+    transform 120ms ease-out;
+}
+.demo-kachel:has(:focus-visible) {
+  outline: 2px solid var(--marke);
+  outline-offset: 2px;
+}
+.demo-kachel-an {
+  border-color: var(--marke);
+  background: var(--marke);
+  color: #fff;
+}
+.demo-kachel .demo-haken {
+  border-color: #c3c9cf;
+}
+.demo-kachel-an .demo-haken {
+  border-color: #fff;
+  background: #fff;
+  color: var(--marke);
+}
+@media (hover: hover) and (pointer: fine) {
+  .demo-kachel:not(.demo-kachel-an):hover {
+    border-color: color-mix(in srgb, var(--marke) 55%, #d5d9de);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .demo-gleiten {
+    animation: demo-gleiten 200ms ease-out;
+  }
+  .demo-haken-pop {
+    animation: demo-pop 300ms ease-out;
+  }
+}
+@keyframes demo-gleiten {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes demo-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Als PDF speichern: nur die A4-Seite drucken */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .druck-rahmen,
+  .druck-rahmen * {
+    visibility: visible;
+  }
+  .druck-rahmen {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .druck-seite {
+    aspect-ratio: auto !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .demo-leiste,
+  [role="tablist"] {
+    display: none !important;
+  }
+}
+
 /* Regler im Rechner: gefüllter Orange-Anteil über --p */
 .regler {
   -webkit-appearance: none;
