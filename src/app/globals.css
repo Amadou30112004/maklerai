@@ -1,0 +1,680 @@
+@import "tailwindcss";
+
+/* Hover nur bei echter Maus */
+@custom-variant can-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+@custom-variant group-can-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:is(:where(.group):hover *) {
+      @slot;
+    }
+  }
+}
+
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --surface-2: #ece9e3;
+  --ink: #121212;
+  --ink-2: #3a3a3a;
+  --line: #e2ded6;
+  --accent: #ff5f3a;
+  --orange-1: #ffb36b;
+  --orange-2: #ff5f3a;
+  --orange-3: #e8501e;
+  --grad: linear-gradient(135deg, var(--orange-1) 0%, var(--orange-2) 55%, var(--orange-3) 100%);
+  --grad-soft: linear-gradient(160deg, #fff4ea 0%, #ffe3d3 55%, #ffd2bd 100%);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-orange-1: var(--orange-1);
+  --color-orange-2: var(--orange-2);
+  --color-orange-3: var(--orange-3);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --radius-card: 20px;
+  --radius-btn: 12px;
+  --shadow-float: 0 1px 2px rgb(18 18 18 / 0.04), 0 12px 32px -8px rgb(120 40 10 / 0.18);
+  --shadow-soft: 0 1px 2px rgb(18 18 18 / 0.04), 0 6px 20px -10px rgb(18 18 18 / 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid var(--orange-3);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+.bg-grad {
+  background: var(--grad);
+}
+
+.bg-grad-soft {
+  background: var(--grad-soft);
+}
+
+/* ------------------------------------------------------------------
+   Akzente: Leuchtflächen, Pinselstrich, Glanz, Lichtfleck
+   Nur Orange-Töne aus den Tokens und Schwarz. Alle Leuchtflächen ohne
+   Pointer und ohne Einfluss aufs Layout.
+   ------------------------------------------------------------------ */
+
+.leuchten {
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(255 95 58 / 0.95) 0%,
+    rgb(255 179 107 / 0.6) 45%,
+    transparent 100%
+  );
+  filter: blur(48px);
+  opacity: 0.35;
+  z-index: 0;
+}
+.hero-leuchten {
+  opacity: 0.35;
+}
+.dunkel-leuchten {
+  opacity: 0.3;
+}
+.termin-leuchten {
+  opacity: 0.22;
+}
+/* Mobil kleiner und ruhiger, damit die Seite flüssig bleibt */
+@media (max-width: 767px) {
+  .leuchten {
+    filter: blur(32px);
+  }
+  .hero-leuchten {
+    inset: 10% 0;
+    opacity: 0.28;
+  }
+}
+
+/* Pinselstrich unter „Ihren Kunden.“ */
+.pinsel-strich {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* Glanzlicht über dunklen Buttons, nur beim Hover mit Maus */
+.glanz {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glanz::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 179 107 / 0.55) 48%, rgb(255 95 58 / 0.35) 54%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+/* Lichtfleck auf den Projekt-Karten folgt der Maus (Position aus LichtEffekt) */
+.licht-karte::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(380px circle at var(--x, 50%) var(--y, 0%), rgb(255 95 58 / 0.13), transparent 65%);
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+}
+.licht-karte::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(240px circle at var(--x, 50%) var(--y, 0%), rgb(255 95 58 / 0.7), transparent 70%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+}
+.licht-an .licht-karte:hover::before,
+.licht-an .licht-karte:hover::after {
+  opacity: 1;
+}
+
+/* Kacheln „Kennen Sie das?“: kleiner Lichtschein hinter dem Icon beim Hover */
+.alltag-schein {
+  background: radial-gradient(closest-side, rgb(255 95 58 / 0.45), transparent);
+  opacity: 0;
+  transform: scale(0.7);
+  transition:
+    opacity 250ms ease-out,
+    transform 250ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .alltag-kachel:hover .alltag-schein {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.press {
+  transition: transform 120ms ease-out;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    transform: none;
+  }
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ------------------------------------------------------------------
+   Bewegung beim Scrollen
+   Inhalte sind im HTML immer sichtbar. Versteckt wird erst, wenn
+   ScrollEffekte die Klasse .anim-bereit am <html> gesetzt hat.
+   Ausgelöst wird über .is-visible (einmalig). Nur transform, opacity
+   und bei SVG-Linien stroke-dashoffset.
+   ------------------------------------------------------------------ */
+
+.wa-tippen {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Einzelne Blöcke */
+  .anim-bereit [data-reveal] {
+    transition:
+      opacity 450ms ease-out,
+      transform 450ms ease-out;
+    transition-delay: var(--d, 0ms);
+  }
+  .anim-bereit [data-reveal]:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* Kartenreihen: Kinder nacheinander, 60 ms Versatz */
+  .anim-bereit [data-stagger] > * {
+    transition:
+      opacity 450ms ease-out,
+      transform 450ms ease-out;
+    transition-delay: calc(var(--i, 0) * 60ms);
+  }
+  .anim-bereit [data-stagger]:not(.is-visible) > * {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* Hero: Karten kommen nacheinander von unten, danach leichtes Schweben */
+  .hero-ankunft {
+    animation: hero-hoch 600ms ease-out both;
+    animation-delay: var(--d, 0ms);
+  }
+  .hero-schweben {
+    animation: hero-schweben var(--dauer, 7s) ease-in-out var(--sd, 0s) infinite;
+  }
+
+  /* Pinselstrich zeichnet sich beim Laden einmal von links nach rechts */
+  .pinsel-strich {
+    animation: pinsel-zeichnen 600ms ease-out 350ms both;
+  }
+  .pinsel-strich-2 {
+    animation-delay: 550ms;
+  }
+
+  /* Leuchtflächen bewegen sich sehr langsam, nur ab Tablet */
+  @media (min-width: 768px) {
+    .hero-leuchten {
+      animation: leuchten-treiben 26s ease-in-out infinite alternate;
+    }
+    .dunkel-leuchten {
+      animation: leuchten-treiben 30s ease-in-out -8s infinite alternate;
+    }
+  }
+
+  /* Glanzlicht läuft beim Hover einmal über den Button */
+  @media (hover: hover) and (pointer: fine) {
+    .glanz:hover::after {
+      transform: translateX(120%);
+      transition: transform 700ms ease-out;
+    }
+  }
+
+  /* Icons in „Kennen Sie das?“ pulsieren beim Einblenden einmal kurz */
+  .anim-bereit [data-stagger].is-visible .alltag-icon {
+    animation: icon-puls 520ms ease-out both;
+    animation-delay: calc(var(--i, 0) * 60ms + 250ms);
+  }
+
+  /* Formular: Höhe, Fortschritt und Schrittwechsel */
+  .formular-huelle {
+    transition: height 280ms ease-out;
+  }
+  .fortschritt {
+    transition: transform 300ms ease-out;
+  }
+  .schritt-rein-vor {
+    animation: schritt-rein-rechts 170ms ease-out both;
+  }
+  .schritt-rein-zurueck {
+    animation: schritt-rein-links 170ms ease-out both;
+  }
+  .schritt-raus-vor {
+    animation: schritt-raus-links 130ms ease-out both;
+  }
+  .schritt-raus-zurueck {
+    animation: schritt-raus-rechts 130ms ease-out both;
+  }
+  .haken-pop {
+    animation: haken-pop 360ms ease-out 120ms both;
+  }
+
+  /* Gestaffelte Elemente in Vorschauen (WhatsApp, Schadenmeldung) */
+  .anim-bereit .seq .seq-teil {
+    transition:
+      opacity 300ms ease-out,
+      transform 300ms ease-out;
+    transition-delay: var(--d, 0ms);
+  }
+  .anim-bereit .seq:not(.is-visible) .seq-teil {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .anim-bereit .seq:not(.is-visible) .seq-pop {
+    transform: scale(0.8);
+  }
+  .anim-bereit .seq.is-visible .wa-tippen {
+    animation: wa-tippen 600ms ease-out 350ms both;
+  }
+  .wa-tippen span {
+    animation: wa-punkt 600ms ease-in-out 1;
+  }
+  .wa-tippen span:nth-child(2) {
+    animation-delay: 100ms;
+  }
+  .wa-tippen span:nth-child(3) {
+    animation-delay: 200ms;
+  }
+  .anim-bereit .seq .seq-haken path {
+    transition: stroke-dashoffset 300ms ease-out;
+    transition-delay: 650ms;
+  }
+  .anim-bereit .seq:not(.is-visible) .seq-haken path {
+    stroke-dashoffset: 1;
+  }
+
+
+  /* FAQ: Antwort klappt weich auf, wo der Browser es kann */
+  @supports selector(::details-content) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+    .faq-eintrag::details-content {
+      block-size: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition:
+        block-size 280ms ease-out,
+        opacity 280ms ease-out,
+        content-visibility 280ms allow-discrete;
+    }
+    .faq-eintrag[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
+}
+
+.seq-haken path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+@keyframes pinsel-zeichnen {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes leuchten-treiben {
+  from {
+    transform: translate3d(-4%, 3%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, -4%, 0) scale(1.08);
+  }
+}
+
+@keyframes icon-puls {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes schritt-rein-rechts {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes schritt-rein-links {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes schritt-raus-links {
+  to {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+@keyframes schritt-raus-rechts {
+  to {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+
+@keyframes haken-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-hoch {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-schweben {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-6px);
+  }
+  75% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes wa-tippen {
+  0% {
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes wa-punkt {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Eingabefelder: mindestens 16 px, damit iOS nicht zoomt */
+.feld {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  padding: 13px 14px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ink);
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+.feld:focus {
+  outline: none;
+  border-color: var(--orange-3);
+  box-shadow: 0 0 0 1px var(--orange-3);
+  background: var(--surface);
+}
+.feld[aria-invalid="true"] {
+  border-color: #b23a12;
+}
+
+/* Tippen soll sich wie eine App anfühlen: kein grauer Blitz, keine Verzögerung */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a,
+label,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* ------------------------------------------------------------------
+   Demo Schadenmeldung: Farbe des Beispielbüros über --marke
+   ------------------------------------------------------------------ */
+.demo-feld {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  border-radius: 12px;
+  border: 1px solid #cfd4da;
+  background: #fff;
+  padding: 13px 14px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #1d2733;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.demo-feld:focus {
+  outline: none;
+  border-color: var(--marke);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--marke) 18%, transparent);
+}
+.demo-feld[aria-invalid="true"] {
+  border-color: #a3271a;
+}
+.demo-feld::placeholder {
+  color: #8a939c;
+}
+
+.demo-kachel {
+  border-color: #d5d9de;
+  background: #fff;
+  color: #1d2733;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out,
+    transform 120ms ease-out;
+}
+.demo-kachel:has(:focus-visible) {
+  outline: 2px solid var(--marke);
+  outline-offset: 2px;
+}
+.demo-kachel-an {
+  border-color: var(--marke);
+  background: var(--marke);
+  color: #fff;
+}
+.demo-kachel .demo-haken {
+  border-color: #c3c9cf;
+}
+.demo-kachel-an .demo-haken {
+  border-color: #fff;
+  background: #fff;
+  color: var(--marke);
+}
+@media (hover: hover) and (pointer: fine) {
+  .demo-kachel:not(.demo-kachel-an):hover {
+    border-color: color-mix(in srgb, var(--marke) 55%, #d5d9de);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .demo-gleiten {
+    animation: demo-gleiten 200ms ease-out;
+  }
+  .demo-haken-pop {
+    animation: demo-pop 300ms ease-out;
+  }
+}
+@keyframes demo-gleiten {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes demo-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Als PDF speichern: nur die A4-Seite drucken */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .druck-rahmen,
+  .druck-rahmen * {
+    visibility: visible;
+  }
+  .druck-rahmen {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .druck-seite {
+    aspect-ratio: auto !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .demo-leiste,
+  [role="tablist"] {
+    display: none !important;
+  }
+}
+
+
+/* Projekt-Vorschauen: fester Ausschnitt, unten weich ausgeblendet */
+.vorschau-ausschnitt {
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+}
+.vorschau-von-unten {
+  -webkit-mask-image: linear-gradient(to top, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 78%, transparent 100%);
+}
