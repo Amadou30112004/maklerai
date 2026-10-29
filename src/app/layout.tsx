@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { site } from "@/config/site";
 import "./globals.css";
 
@@ -40,7 +41,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="de" className={`${geistSans.variable} antialiased`}>
-      <body className="min-h-svh">{children}</body>
+      <body className="min-h-svh">
+        {children}
+        <SpeedInsights />
+      </body>
     </html>
   );
 }
