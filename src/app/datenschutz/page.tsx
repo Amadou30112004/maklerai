@@ -29,10 +29,10 @@ export default function DatenschutzSeite() {
         Server-Logs und Angaben zum Auftragsverarbeitungsvertrag ergänzen.]
       </p>
 
-      <h2>3. Kontaktformular für das Erstgespräch</h2>
+      <h2>3. Kontaktformular für den Termin</h2>
       <p>
-        Wenn Sie das Formular nutzen, verarbeiten wir Ihre Angaben (Name, Maklerbüro, E-Mail, optional Telefon sowie
-        Ihre Antworten zu Büro und Interessen), um das Erstgespräch vorzubereiten. Rechtsgrundlage ist Ihre Einwilligung
+        Wenn Sie das Formular nutzen, verarbeiten wir Ihre Angaben (Vorname, Nachname, Maklerbüro, E-Mail, optional
+        Telefon sowie Ihre freiwilligen Antworten zu Büro und Interessen), um den Termin vorzubereiten. Rechtsgrundlage ist Ihre Einwilligung
         (Art. 6 Abs. 1 lit. a DSGVO) sowie vorvertragliche Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO). Sie können Ihre
         Einwilligung jederzeit per E-Mail widerrufen.
       </p>

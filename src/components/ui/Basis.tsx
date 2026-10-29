@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ComponentProps, ComponentType, ReactNode, SVGProps } from "react";
 import { site } from "@/config/site";
@@ -14,10 +13,20 @@ export function Container({ className = "", children }: { className?: string; ch
   );
 }
 
-export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function Eyebrow({
+  children,
+  className = "",
+  dunkel = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  dunkel?: boolean;
+}) {
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-ink shadow-[var(--shadow-soft)] ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] ${
+        dunkel ? "bg-white/[0.08] text-white ring-1 ring-white/10" : "bg-surface text-ink shadow-[var(--shadow-soft)]"
+      } ${className}`}
     >
       <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
       {children}
@@ -32,11 +41,11 @@ type ButtonProps = {
   size?: "md" | "lg";
 } & Omit<ComponentProps<"a">, "href">;
 
-// Primärbutton: schwarz, weißer Text, rechts weiße Kachel mit Pfeil
+// Primärbutton: schwarz, weißer Text, rechts weiße Kachel mit Pfeil, beim Hover ein Orange-Glanz
 export function PrimaryButton({ href, children, className = "", size = "md", ...rest }: ButtonProps) {
   const pad = size === "lg" ? "py-2 pl-5 pr-2 text-base min-h-[52px]" : "py-1.5 pl-4 pr-1.5 text-[15px] min-h-[44px]";
   const kachel = size === "lg" ? "size-9" : "size-8";
-  const cls = `press group inline-flex items-center gap-3 rounded-[12px] bg-ink font-medium text-white ${pad} ${className}`;
+  const cls = `press glanz group inline-flex items-center gap-3 rounded-[12px] bg-ink font-medium text-white ${pad} ${className}`;
   const inhalt = (
     <>
       <span>{children}</span>
@@ -62,26 +71,39 @@ export function PrimaryButton({ href, children, className = "", size = "md", ...
   );
 }
 
+// Der eine Handlungsaufruf der Seite, überall gleich
+export function TerminButton({ className = "", size = "md" }: { className?: string; size?: "md" | "lg" }) {
+  return (
+    <PrimaryButton href="#pilot" size={size} className={className}>
+      Termin vereinbaren
+    </PrimaryButton>
+  );
+}
+
 export function SectionHead({
   eyebrow,
   titel,
   text,
   center = false,
+  dunkel = false,
   id,
 }: {
   eyebrow?: string;
   titel: ReactNode;
   text?: ReactNode;
   center?: boolean;
+  dunkel?: boolean;
   id?: string;
 }) {
   return (
     <div className={`max-w-[720px] ${center ? "mx-auto text-center" : ""}`}>
-      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+      {eyebrow && <Eyebrow dunkel={dunkel}>{eyebrow}</Eyebrow>}
       <h2 id={id} className="mt-4 text-[32px] leading-[1.08] sm:text-[44px]">
         {titel}
       </h2>
-      {text && <p className="mt-4 text-[17px] leading-relaxed text-ink-2 sm:text-lg">{text}</p>}
+      {text && (
+        <p className={`mt-4 text-[17px] leading-relaxed sm:text-lg ${dunkel ? "text-[#D9D6D0]" : "text-ink-2"}`}>{text}</p>
+      )}
     </div>
   );
 }
@@ -107,16 +129,23 @@ export function IconKachel({
   );
 }
 
-// Foto von Amadou, nur klein und rund
-export function Avatar({ groesse = 64, rand = false }: { groesse?: 56 | 64 | 72; rand?: boolean }) {
+// Kreis mit Initialen statt Foto
+export function Avatar({ groesse = 48, rand = false }: { groesse?: 48 | 56 | 64 | 72; rand?: boolean }) {
   return (
-    <Image
-      src={site.person.foto}
-      alt={site.person.name}
-      width={groesse}
-      height={groesse}
-      className={`shrink-0 rounded-full object-cover object-top ${rand ? "ring-[3px] ring-white" : ""}`}
-      style={{ width: groesse, height: groesse }}
-    />
+    <span
+      role="img"
+      aria-label={site.person.name}
+      className={`bg-grad grid shrink-0 place-items-center rounded-full font-medium tracking-[-0.02em] text-white ${
+        rand ? "ring-[3px] ring-white" : ""
+      }`}
+      style={{ width: groesse, height: groesse, fontSize: Math.round(groesse * 0.36) }}
+    >
+      {site.person.initialen}
+    </span>
   );
+}
+
+// Weiche Orange-Leuchtfläche hinter Inhalten, rein dekorativ
+export function Leuchten({ className = "" }: { className?: string }) {
+  return <span aria-hidden="true" className={`leuchten pointer-events-none absolute ${className}`} />;
 }

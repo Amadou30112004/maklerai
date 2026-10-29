@@ -1,15 +1,16 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { loesungen, type Loesung } from "./loesungen-daten";
-import { Container, IconKachel, SectionHead } from "./ui/Basis";
+import { Container, IconKachel, SectionHead, TerminButton } from "./ui/Basis";
 import { IconHaken, IconPdf, IconPfeilRechts } from "./ui/Icons";
 import { Reveal, staffel } from "./ui/Reveal";
 import type { LoesungId } from "@/lib/schema";
 
-const vorschauen: Record<LoesungId, ReactNode> = {
+const vorschauen: Record<LoesungId, ReactNode | null> = {
   schadenmeldung: <VorschauSchaden />,
   aenderungen: <VorschauAenderung />,
   whatsapp: <VorschauWhatsApp />,
+  eigenes: null,
 };
 
 // Raster: Desktop 3 Spalten, Tablet jede Karte volle Breite, mobil untereinander
@@ -25,48 +26,54 @@ const kartenLayout: Record<Loesung["format"], string> = {
   breit: "lg:grid lg:grid-cols-[0.8fr_1.6fr] lg:gap-10 lg:p-9",
 };
 
-export function Loesungen() {
+// „Ihr eigenes Projekt“ ist eine kleine Karte ohne Vorschau. Neben ihr ist kein Platz frei,
+// darum steht sie als eigene, flache Zeile über die ganze Breite, damit das Raster aufgeht.
+const eigeneZeile = "md:col-span-2 lg:col-span-3";
+
+export function Projekte() {
   return (
-    <section id="loesungen" aria-labelledby="loesungen-titel" className="py-16 sm:py-24">
+    <section id="projekte" aria-labelledby="projekte-titel" className="py-16 sm:py-24">
       <Container>
         <Reveal>
           <SectionHead
-            id="loesungen-titel"
-            eyebrow="Lösungen"
-            titel="Drei Dinge, die Ihrem Innendienst Arbeit abnehmen."
-            text="Wählen Sie, womit Ihr Büro startet. Wir richten es ein, Sie arbeiten weiter wie gewohnt."
+            id="projekte-titel"
+            eyebrow="Projekte"
+            titel="Jedes Maklerhaus ist anders."
+            text="Deshalb schaue ich mir Ihr Büro gemeinsam mit Ihnen genau an und bespreche mit Ihnen die verschiedenen Möglichkeiten einer Zusammenarbeit. Diese Projekte setzen wir zum Beispiel um:"
             center
           />
         </Reveal>
 
         <ul data-stagger="" className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {loesungen.map((l, i) => (
-            <li key={l.id} style={staffel(i)} className={`min-w-0 ${spalten[l.format]}`}>
+            <li key={l.id} style={staffel(i)} className={`min-w-0 ${l.id === "eigenes" ? eigeneZeile : spalten[l.format]}`}>
               <Karte loesung={l} />
             </li>
           ))}
         </ul>
 
-        <div className="mt-10 text-center">
-          <a
-            href="#pilot"
-            className="group inline-flex min-h-[44px] items-center gap-2 text-[16px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent"
-          >
-            Welche Lösung passt zu Ihrem Büro? Lassen Sie uns sprechen
-            <IconPfeilRechts className="size-4 transition-transform motion-safe:group-can-hover:translate-x-0.5" />
-          </a>
-        </div>
+        <Reveal>
+          <div className="mt-14 flex flex-col items-center gap-5 text-center">
+            <p className="max-w-[560px] text-[18px] font-medium leading-snug tracking-[-0.01em] sm:text-[20px]">
+              Welche Möglichkeiten gibt es in Ihrem Büro? Vereinbaren Sie einen Termin, und wir prüfen es gemeinsam.
+            </p>
+            <TerminButton />
+          </div>
+        </Reveal>
       </Container>
     </section>
   );
 }
 
+// Gemeinsame Hülle: Lichtfleck folgt der Maus (siehe LichtEffekt), Hover hebt leicht an
+const huelle =
+  "licht-karte group relative isolate h-full overflow-hidden rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out sm:p-7 motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)]";
+
 function Karte({ loesung: l }: { loesung: Loesung }) {
+  if (l.id === "eigenes") return <EigeneKarte loesung={l} />;
   const gross = l.format !== "klein";
   return (
-    <article
-      className={`group flex h-full flex-col rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out sm:p-7 motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)] ${kartenLayout[l.format]}`}
-    >
+    <article className={`${huelle} flex flex-col ${kartenLayout[l.format]}`}>
       <div className="flex min-w-0 flex-col">
         <IconKachel
           icon={l.icon}
@@ -89,7 +96,7 @@ function Karte({ loesung: l }: { loesung: Loesung }) {
             href="/demo/schadenmeldung"
             className="group/demo mt-5 inline-flex min-h-[44px] items-center gap-2 self-start text-[15.5px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent"
           >
-            Demo ausprobieren
+            Beispiel durchklicken
             <IconPfeilRechts className="size-4" />
           </Link>
         )}
@@ -102,6 +109,28 @@ function Karte({ loesung: l }: { loesung: Loesung }) {
       >
         {vorschauen[l.id]}
       </div>
+    </article>
+  );
+}
+
+function EigeneKarte({ loesung: l }: { loesung: Loesung }) {
+  return (
+    <article className={`${huelle} flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8`}>
+      <IconKachel
+        icon={l.icon}
+        className="transition-transform duration-300 ease-out motion-safe:group-can-hover:-rotate-6"
+      />
+      <div className="min-w-0 flex-1">
+        <h3 className="text-[21px] leading-tight">{l.titel}</h3>
+        <p className="mt-2 max-w-[640px] text-[15.5px] leading-relaxed text-ink-2">{l.text}</p>
+      </div>
+      <a
+        href="#pilot"
+        className="inline-flex min-h-[44px] shrink-0 items-center gap-2 self-start text-[15.5px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent sm:self-center"
+      >
+        Termin vereinbaren
+        <IconPfeilRechts className="size-4" />
+      </a>
     </article>
   );
 }

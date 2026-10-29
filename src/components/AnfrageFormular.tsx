@@ -1,80 +1,125 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { site } from "@/config/site";
 import {
-  bueroGroessen,
-  schritt1Schema,
-  schritt2Schema,
-  schwerpunkte,
-  type LoesungId,
-} from "@/lib/schema";
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+  type Ref,
+} from "react";
+import { site } from "@/config/site";
+import { bueroGroessen, pruefeSchritt, type LoesungId, type Schritt } from "@/lib/schema";
 import { loesungen } from "./loesungen-daten";
-import { Avatar } from "./ui/Basis";
 import { IconHaken, IconPfeilRechts } from "./ui/Icons";
 
 type Daten = {
-  groesse: string;
-  schwerpunkt: string;
-  interessen: LoesungId[];
-  zeitfresser: string;
-  name: string;
+  vorname: string;
+  nachname: string;
   buero: string;
   email: string;
   telefon: string;
+  zeitfresser: string;
+  interessen: LoesungId[];
+  groesse: string;
   einwilligung: boolean;
   website: string; // Honeypot
 };
 
-type Fehler = Partial<Record<keyof Daten | "allgemein", string>>;
+type Fehler = Partial<Record<keyof Daten, string>>;
 
 const leer: Daten = {
-  groesse: "",
-  schwerpunkt: "",
-  interessen: [],
-  zeitfresser: "",
-  name: "",
+  vorname: "",
+  nachname: "",
   buero: "",
   email: "",
   telefon: "",
+  zeitfresser: "",
+  interessen: [],
+  groesse: "",
   einwilligung: false,
   website: "",
 };
 
-function fehlerAus(issues: { path: PropertyKey[]; message: string }[]): Fehler {
-  const f: Fehler = {};
-  for (const i of issues) {
-    const key = String(i.path[0]) as keyof Fehler;
-    if (!f[key]) f[key] = i.message;
-  }
-  return f;
+const titel: Record<Schritt, string> = {
+  1: "Buchen Sie Ihren Termin",
+  2: "Wie erreichen wir Sie?",
+  3: "Worum soll es gehen?",
+};
+
+// Reihenfolge der Felder je Schritt, damit das erste fehlerhafte Feld den Fokus bekommt
+const felder: Record<Schritt, (keyof Daten)[]> = {
+  1: ["vorname", "nachname"],
+  2: ["buero", "email", "telefon"],
+  3: ["zeitfresser", "interessen", "groesse", "einwilligung"],
+};
+
+// Alter Inhalt gleitet raus, neuer kommt rein: zusammen knapp 300 ms
+const AUS_MS = 130;
+
+// true erst im Browser. Ohne JavaScript bleibt es ein normales Formular mit allen Feldern untereinander.
+const abonnieren = () => () => {};
+function useMitJs() {
+  return useSyncExternalStore(
+    abonnieren,
+    () => true,
+    () => false,
+  );
+}
+
+function wenigBewegung() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 export function AnfrageFormular() {
-  const [schritt, setSchritt] = useState<1 | 2 | "fertig">(1);
+  const mitJs = useMitJs();
+  const [schritt, setSchritt] = useState<Schritt | "fertig">(1);
+  const [phase, setPhase] = useState<"ruhe" | "raus">("ruhe");
+  const [richtung, setRichtung] = useState<"vor" | "zurueck">("vor");
   const [daten, setDaten] = useState<Daten>(leer);
   const [fehler, setFehler] = useState<Fehler>({});
   const [sendet, setSendet] = useState(false);
+  const [sendeFehler, setSendeFehler] = useState("");
+  const [hoehe, setHoehe] = useState<number | null>(null);
   const startedAt = useRef(0);
-  const kopfRef = useRef<HTMLDivElement>(null);
+  const kopfRef = useRef<HTMLHeadingElement>(null);
+  const innenRef = useRef<HTMLDivElement>(null);
   const letzterSchritt = useRef(schritt);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     startedAt.current = Date.now();
+    return () => clearTimeout(timer.current);
   }, []);
 
-  // Beim Schrittwechsel Fokus auf den Kopf, damit Screenreader und Tastatur mitkommen
+  // Höhe der Karte folgt dem Inhalt weich, ohne dass die Seite springt
+  useLayoutEffect(() => {
+    const el = innenRef.current;
+    if (!el || !mitJs) return;
+    const ro = new ResizeObserver(([e]) => setHoehe(Math.ceil(e.borderBoxSize[0]?.blockSize ?? e.contentRect.height)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [mitJs]);
+
+  // Beim Schrittwechsel Fokus auf die neue Überschrift, ohne zu scrollen
   useEffect(() => {
     if (letzterSchritt.current === schritt) return;
     letzterSchritt.current = schritt;
     kopfRef.current?.focus({ preventScroll: true });
-    kopfRef.current?.scrollIntoView({ block: "nearest" });
   }, [schritt]);
 
   const set = <K extends keyof Daten>(key: K, value: Daten[K]) => {
     setDaten((d) => ({ ...d, [key]: value }));
-    setFehler((f) => ({ ...f, [key]: undefined, allgemein: undefined }));
+    setFehler((f) => ({ ...f, [key]: undefined }));
+  };
+
+  // Nach Verlassen eines Feldes nur dieses Feld prüfen
+  const pruefeFeld = (key: keyof Daten) => {
+    if (schritt === "fertig") return;
+    const r = pruefeSchritt(schritt, daten);
+    setFehler((f) => ({ ...f, [key]: r.ok ? undefined : r.fehler[key] }));
   };
 
   const toggleInteresse = (id: LoesungId) =>
@@ -83,253 +128,396 @@ export function AnfrageFormular() {
       daten.interessen.includes(id) ? daten.interessen.filter((x) => x !== id) : [...daten.interessen, id],
     );
 
-  const weiter = () => {
-    const r = schritt1Schema.safeParse(daten);
-    if (!r.success) {
-      setFehler(fehlerAus(r.error.issues));
+  const wechsel = (ziel: Schritt | "fertig", r: "vor" | "zurueck") => {
+    clearTimeout(timer.current);
+    if (wenigBewegung()) {
+      setSchritt(ziel);
       return;
     }
-    setFehler({});
-    setSchritt(2);
+    setRichtung(r);
+    setPhase("raus");
+    timer.current = setTimeout(() => {
+      setSchritt(ziel);
+      setPhase("ruhe");
+    }, AUS_MS);
   };
 
   const absenden = async () => {
-    const r = schritt2Schema.safeParse(daten);
-    if (!r.success) {
-      setFehler(fehlerAus(r.error.issues));
-      return;
-    }
     setSendet(true);
+    setSendeFehler("");
     try {
       const res = await fetch("/api/pilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...daten, startedAt: startedAt.current }),
       });
-      const json = (await res.json().catch(() => ({}))) as { fehler?: Fehler; meldung?: string };
       if (!res.ok) {
-        setFehler(json.fehler ?? { allgemein: json.meldung ?? "Das hat leider nicht geklappt. Bitte versuchen Sie es erneut." });
-        return;
+        const json = (await res.json().catch(() => ({}))) as { meldung?: string };
+        setSendeFehler(
+          json.meldung ?? `Das hat leider nicht geklappt. Schreiben Sie mir gern direkt an ${site.person.email}.`,
+        );
       }
-      setSchritt("fertig");
     } catch {
-      setFehler({ allgemein: "Keine Verbindung. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut." });
+      setSendeFehler(
+        `Keine Verbindung. Ihre Angaben sind nicht angekommen, schreiben Sie mir gern an ${site.person.email}.`,
+      );
     } finally {
       setSendet(false);
     }
+    // Der Kalender-Button erscheint in jedem Fall
+    wechsel("fertig", "vor");
   };
 
-  if (schritt === "fertig") {
-    const vorname = daten.name.trim().split(/\s+/)[0];
-    return (
-      <div ref={kopfRef} tabIndex={-1} className="text-center outline-none" role="status">
-        <div className="flex justify-center">
-          <Avatar groesse={72} />
-        </div>
-        <h3 className="mx-auto mt-5 max-w-[380px] text-[24px] leading-tight">
-          Danke, {vorname}. Wählen Sie jetzt Ihren Wunschtermin mit {site.person.name}.
-        </h3>
-        <a
-          href={site.bookingUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="press mt-7 inline-flex min-h-[56px] w-full items-center justify-between gap-3 rounded-[12px] bg-ink py-2 pl-6 pr-2 text-[17px] font-medium text-white"
-        >
-          Termin auswählen
-          <span className="grid size-10 place-items-center rounded-[9px] bg-white text-ink" aria-hidden="true">
-            <IconPfeilRechts className="size-4" />
-          </span>
-          <span className="sr-only"> (öffnet in neuem Tab)</span>
-        </a>
-        <p className="mt-5 text-[14px] text-ink-2">
-          Lieber direkt?{" "}
-          <a href={`mailto:${site.person.email}`} className="text-ink underline underline-offset-4">
-            {site.person.email}
-          </a>
-          {" · "}
-          <a href={site.person.telefonLink} className="whitespace-nowrap text-ink underline underline-offset-4">
-            {site.person.telefonAnzeige}
-          </a>
-        </p>
-      </div>
-    );
-  }
+  const weiter = () => {
+    if (schritt === "fertig") return;
+    const r = pruefeSchritt(schritt, daten);
+    if (!r.ok) {
+      setFehler(r.fehler);
+      const erstes = felder[schritt].find((k) => r.fehler[k]);
+      if (erstes) document.getElementById(`feld-${erstes}`)?.focus();
+      return;
+    }
+    setFehler({});
+    if (schritt === 3) void absenden();
+    else wechsel((schritt + 1) as Schritt, "vor");
+  };
+
+  const zurueck = () => {
+    if (schritt === "fertig" || schritt === 1) return;
+    setFehler({});
+    wechsel((schritt - 1) as Schritt, "zurueck");
+  };
+
+  const animKlasse =
+    phase === "raus"
+      ? richtung === "vor"
+        ? "schritt-raus-vor"
+        : "schritt-raus-zurueck"
+      : richtung === "vor"
+        ? "schritt-rein-vor"
+        : "schritt-rein-zurueck";
+
+  // Ohne JavaScript: alle Schritte sichtbar
+  const sichtbar = (s: Schritt) => !mitJs || schritt === s;
 
   return (
-    <form
-      noValidate
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (schritt === 1) weiter();
-        else void absenden();
-      }}
-    >
-      <div ref={kopfRef} tabIndex={-1} className="outline-none">
-        <div className="flex items-center justify-between">
-          <p className="text-[13px] font-medium text-ink-2" aria-live="polite">
-            Schritt {schritt} von 2
-          </p>
-          <p className="text-[13px] text-ink-2">{schritt === 1 ? "Kurz zu Ihrem Büro" : "Ihre Kontaktdaten"}</p>
-        </div>
-        <div className="mt-2.5 flex gap-1.5" aria-hidden="true">
-          <span className="bg-grad h-1.5 flex-1 rounded-full" />
-          <span className={`h-1.5 flex-1 rounded-full ${schritt === 2 ? "bg-grad" : "bg-surface-2"}`} />
-        </div>
-      </div>
-
-      {/* Honeypot: für Menschen unsichtbar */}
-      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
-        <label>
-          Website
-          <input
-            type="text"
-            tabIndex={-1}
-            autoComplete="off"
-            value={daten.website}
-            onChange={(e) => set("website", e.target.value)}
-          />
-        </label>
-      </div>
-
-      {schritt === 1 ? (
-        <div className="mt-7 space-y-7">
-          <Gruppe legend="Wie groß ist Ihr Büro?" fehler={fehler.groesse} id="groesse">
-            <div className="grid grid-cols-2 gap-2">
-              {bueroGroessen.map((g) => (
-                <Kachel key={g} name="groesse" type="radio" checked={daten.groesse === g} onChange={() => set("groesse", g)}>
-                  {g}
-                </Kachel>
-              ))}
-            </div>
-          </Gruppe>
-
-          <Gruppe legend="Wo liegt Ihr Schwerpunkt?" fehler={fehler.schwerpunkt} id="schwerpunkt">
-            <div className="flex flex-wrap gap-2 [&>label]:flex-auto">
-              {schwerpunkte.map((s) => (
-                <Kachel key={s} name="schwerpunkt" type="radio" checked={daten.schwerpunkt === s} onChange={() => set("schwerpunkt", s)}>
-                  {s}
-                </Kachel>
-              ))}
-            </div>
-          </Gruppe>
-
-          <Gruppe
-            legend="Welche Verbesserungen interessieren Sie am meisten?"
-            hinweis="Mehrfachauswahl möglich"
-            fehler={fehler.interessen}
-            id="interessen"
+    <div className="formular-huelle overflow-hidden" style={mitJs && hoehe !== null ? { height: hoehe } : undefined}>
+      <div ref={innenRef}>
+        {schritt === "fertig" ? (
+          <Abschluss vorname={daten.vorname.trim()} sendeFehler={sendeFehler} kopfRef={kopfRef} className={animKlasse} />
+        ) : (
+          <form
+            noValidate={mitJs}
+            action="/api/pilot"
+            method="post"
+            onSubmit={(e) => {
+              e.preventDefault();
+              weiter();
+            }}
           >
-            <div className="grid gap-2 sm:grid-cols-2">
-              {loesungen.map((l) => (
-                <Kachel
-                  key={l.id}
-                  name="interessen"
-                  type="checkbox"
-                  checked={daten.interessen.includes(l.id)}
-                  onChange={() => toggleInteresse(l.id)}
-                  icon={<l.icon className="size-[18px]" />}
-                >
-                  {l.kurz}
-                </Kachel>
-              ))}
+            {mitJs && <Fortschritt schritt={schritt} />}
+
+            {/* Honeypot: für Menschen unsichtbar */}
+            <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+              <label>
+                Website
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={daten.website}
+                  onChange={(e) => set("website", e.target.value)}
+                />
+              </label>
             </div>
-          </Gruppe>
+            {/* Ohne JavaScript gibt es keine Startzeit, der Spam-Schutz läuft dann nur über das versteckte Feld */}
+            {!mitJs && <input type="hidden" name="startedAt" value="1" />}
 
-          <div>
-            <label htmlFor="zeitfresser" className="text-[15px] font-medium">
-              Was kostet Sie im Büro am meisten Zeit? <span className="font-normal text-ink-2">(optional)</span>
-            </label>
-            <textarea
-              id="zeitfresser"
-              rows={3}
-              value={daten.zeitfresser}
-              onChange={(e) => set("zeitfresser", e.target.value)}
-              className="feld mt-2 resize-y"
-              aria-invalid={!!fehler.zeitfresser}
-              aria-describedby={fehler.zeitfresser ? "zeitfresser-fehler" : undefined}
-            />
-            <FeldFehler id="zeitfresser-fehler" text={fehler.zeitfresser} />
-          </div>
+            <div key={schritt} className={mitJs ? animKlasse : ""}>
+              {sichtbar(1) && (
+                <Abschnitt titel={titel[1]} kopfRef={mitJs ? kopfRef : undefined}>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Feld
+                      id="vorname"
+                      label="Vorname"
+                      autoComplete="given-name"
+                      enterKeyHint="next"
+                      value={daten.vorname}
+                      onChange={(v) => set("vorname", v)}
+                      onBlur={() => pruefeFeld("vorname")}
+                      fehler={fehler.vorname}
+                    />
+                    <Feld
+                      id="nachname"
+                      label="Nachname"
+                      autoComplete="family-name"
+                      enterKeyHint="next"
+                      value={daten.nachname}
+                      onChange={(v) => set("nachname", v)}
+                      onBlur={() => pruefeFeld("nachname")}
+                      fehler={fehler.nachname}
+                    />
+                  </div>
+                  {mitJs && (
+                    <Knoepfe>
+                      <Senden>Weiter</Senden>
+                    </Knoepfe>
+                  )}
+                </Abschnitt>
+              )}
 
-          <Senden>Weiter</Senden>
-        </div>
-      ) : (
-        <div className="mt-7 space-y-5">
-          <Feld id="name" label="Name" autoComplete="name" value={daten.name} onChange={(v) => set("name", v)} fehler={fehler.name} />
-          <Feld
-            id="buero"
-            label="Maklerbüro"
-            autoComplete="organization"
-            value={daten.buero}
-            onChange={(v) => set("buero", v)}
-            fehler={fehler.buero}
-          />
-          <Feld
-            id="email"
-            label="E-Mail"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={daten.email}
-            onChange={(v) => set("email", v)}
-            fehler={fehler.email}
-          />
-          <Feld
-            id="telefon"
-            label="Telefon"
-            optional
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            value={daten.telefon}
-            onChange={(v) => set("telefon", v)}
-            fehler={fehler.telefon}
-          />
+              {sichtbar(2) && (
+                <Abschnitt titel={titel[2]} kopfRef={mitJs ? kopfRef : undefined} abstand={!mitJs}>
+                  <div className="space-y-5">
+                    <Feld
+                      id="buero"
+                      label="Maklerbüro"
+                      autoComplete="organization"
+                      enterKeyHint="next"
+                      value={daten.buero}
+                      onChange={(v) => set("buero", v)}
+                      onBlur={() => pruefeFeld("buero")}
+                      fehler={fehler.buero}
+                    />
+                    <Feld
+                      id="email"
+                      label="E-Mail"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      enterKeyHint="next"
+                      value={daten.email}
+                      onChange={(v) => set("email", v)}
+                      onBlur={() => pruefeFeld("email")}
+                      fehler={fehler.email}
+                    />
+                    <Feld
+                      id="telefon"
+                      label="Telefon"
+                      optional
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      enterKeyHint="next"
+                      value={daten.telefon}
+                      onChange={(v) => set("telefon", v)}
+                      onBlur={() => pruefeFeld("telefon")}
+                      fehler={fehler.telefon}
+                    />
+                  </div>
+                  {mitJs && (
+                    <Knoepfe>
+                      <Zurueck onClick={zurueck} />
+                      <Senden>Weiter</Senden>
+                    </Knoepfe>
+                  )}
+                </Abschnitt>
+              )}
 
-          <div>
-            <label className="flex cursor-pointer items-start gap-3 text-[14.5px] leading-relaxed">
-              <input
-                type="checkbox"
-                checked={daten.einwilligung}
-                onChange={(e) => set("einwilligung", e.target.checked)}
-                className="mt-0.5 size-6 shrink-0 cursor-pointer rounded-md accent-[#121212]"
-                aria-invalid={!!fehler.einwilligung}
-                aria-describedby={fehler.einwilligung ? "einwilligung-fehler" : undefined}
-              />
-              <span>
-                Ich bin einverstanden, dass meine Angaben zur Vorbereitung des Gesprächs verarbeitet werden. Details in
-                der{" "}
-                <Link href="/datenschutz" className="underline underline-offset-4" target="_blank">
-                  Datenschutzerklärung
-                </Link>
-                .
-              </span>
-            </label>
-            <FeldFehler id="einwilligung-fehler" text={fehler.einwilligung} />
-          </div>
+              {sichtbar(3) && (
+                <Abschnitt titel={titel[3]} kopfRef={mitJs ? kopfRef : undefined} abstand={!mitJs}>
+                  <p className="-mt-3 mb-6 text-[13.5px] text-ink-2">Alles freiwillig, Sie können auch direkt weiter.</p>
+                  <div className="space-y-7">
+                    <div>
+                      <label htmlFor="feld-zeitfresser" className="text-[15px] font-medium">
+                        Was kostet Ihren Innendienst am meisten Zeit?
+                      </label>
+                      <textarea
+                        id="feld-zeitfresser"
+                        name="zeitfresser"
+                        rows={3}
+                        value={daten.zeitfresser}
+                        onChange={(e) => set("zeitfresser", e.target.value)}
+                        onBlur={() => pruefeFeld("zeitfresser")}
+                        className="feld mt-2 resize-y"
+                        aria-invalid={!!fehler.zeitfresser}
+                        aria-describedby={fehler.zeitfresser ? "zeitfresser-fehler" : undefined}
+                      />
+                      <FeldFehler id="zeitfresser-fehler" text={fehler.zeitfresser} />
+                    </div>
 
-          {fehler.allgemein && (
-            <p role="alert" className="rounded-[12px] bg-[#FFE6DB] px-4 py-3 text-[14.5px] text-[#8A2A0A]">
-              {fehler.allgemein}
-            </p>
-          )}
+                    <Gruppe legend="Was interessiert Sie?" hinweis="Mehrfachauswahl möglich" id="interessen">
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {loesungen.map((l, i) => (
+                          <Kachel
+                            key={l.id}
+                            id={i === 0 ? "feld-interessen" : undefined}
+                            name="interessen"
+                            value={l.id}
+                            type="checkbox"
+                            checked={daten.interessen.includes(l.id)}
+                            onChange={() => toggleInteresse(l.id)}
+                            icon={<l.icon className="size-[18px]" />}
+                          >
+                            {l.kurz}
+                          </Kachel>
+                        ))}
+                      </div>
+                    </Gruppe>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setFehler({});
-                setSchritt(1);
-              }}
-              className="press min-h-[52px] rounded-[12px] bg-surface-2 px-5 text-[16px] font-medium"
-            >
-              Zurück
-            </button>
-            <Senden disabled={sendet}>{sendet ? "Wird gesendet …" : "Weiter zur Terminwahl"}</Senden>
-          </div>
-        </div>
+                    <Gruppe legend="Wie groß ist Ihr Büro?" id="groesse">
+                      <div className="grid grid-cols-3 gap-2">
+                        {bueroGroessen.map((g, i) => (
+                          <Kachel
+                            key={g}
+                            id={i === 0 ? "feld-groesse" : undefined}
+                            name="groesse"
+                            value={g}
+                            type="radio"
+                            mittig
+                            checked={daten.groesse === g}
+                            onChange={() => set("groesse", g)}
+                          >
+                            {g}
+                          </Kachel>
+                        ))}
+                      </div>
+                    </Gruppe>
+
+                    <div>
+                      <label className="flex cursor-pointer items-start gap-3 text-[14.5px] leading-relaxed">
+                        <input
+                          id="feld-einwilligung"
+                          type="checkbox"
+                          name="einwilligung"
+                          required
+                          checked={daten.einwilligung}
+                          onChange={(e) => set("einwilligung", e.target.checked)}
+                          className="mt-0.5 size-6 shrink-0 cursor-pointer rounded-md accent-[#E8501E]"
+                          aria-invalid={!!fehler.einwilligung}
+                          aria-describedby={fehler.einwilligung ? "einwilligung-fehler" : undefined}
+                        />
+                        <span>
+                          Ich bin einverstanden, dass meine Angaben zur Vorbereitung des Termins verarbeitet werden.
+                          Details in der{" "}
+                          <Link href="/datenschutz" className="underline underline-offset-4" target="_blank">
+                            Datenschutzerklärung
+                          </Link>
+                          .
+                        </span>
+                      </label>
+                      <FeldFehler id="einwilligung-fehler" text={fehler.einwilligung} />
+                    </div>
+                  </div>
+                  <Knoepfe>
+                    {mitJs && <Zurueck onClick={zurueck} />}
+                    <Senden disabled={sendet}>{sendet ? "Wird gesendet …" : "Termin auswählen"}</Senden>
+                  </Knoepfe>
+                </Abschnitt>
+              )}
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Fortschritt({ schritt }: { schritt: Schritt }) {
+  return (
+    <div className="mb-6">
+      <p className="text-[13px] font-medium text-ink-2" aria-live="polite">
+        Schritt {schritt} von 3
+      </p>
+      <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+        <span
+          className="fortschritt bg-grad block h-full w-full origin-left rounded-full"
+          style={{ transform: `scaleX(${schritt / 3})` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Abschnitt({
+  titel,
+  kopfRef,
+  abstand = false,
+  children,
+}: {
+  titel: string;
+  kopfRef?: Ref<HTMLHeadingElement>;
+  abstand?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <fieldset className={abstand ? "mt-10 border-t border-line pt-8" : ""}>
+      <legend className="sr-only">{titel}</legend>
+      <h3 ref={kopfRef} tabIndex={-1} className="mb-6 text-[24px] leading-tight outline-none sm:text-[26px]">
+        {titel}
+      </h3>
+      {children}
+    </fieldset>
+  );
+}
+
+function Abschluss({
+  vorname,
+  sendeFehler,
+  kopfRef,
+  className,
+}: {
+  vorname: string;
+  sendeFehler: string;
+  kopfRef: Ref<HTMLHeadingElement>;
+  className: string;
+}) {
+  return (
+    <div className={`text-center ${className}`} role="status">
+      <span className="haken-pop bg-grad mx-auto grid size-16 place-items-center rounded-full text-white shadow-[0_12px_30px_-10px_rgb(232_80_30/0.7)]">
+        <IconHaken className="size-8" strokeWidth={2.4} />
+      </span>
+      <h3 ref={kopfRef} tabIndex={-1} className="mx-auto mt-5 max-w-[400px] text-[26px] leading-tight outline-none">
+        Fast geschafft{vorname ? `, ${vorname}` : ""}
+      </h3>
+      {sendeFehler && (
+        <p
+          role="alert"
+          className="mx-auto mt-4 max-w-[420px] rounded-[12px] bg-[#FFE6DB] px-4 py-3 text-[14.5px] text-[#8A2A0A]"
+        >
+          {sendeFehler}
+        </p>
       )}
-    </form>
+      <p className="mx-auto mt-4 max-w-[420px] text-[16px] leading-relaxed text-ink-2">
+        Wählen Sie jetzt einen freien Termin in meinem Kalender. Im Termin klären wir gemeinsam, welche Möglichkeiten es
+        für Ihr Büro gibt.
+      </p>
+      <a
+        href={site.person.terminLink}
+        target="_blank"
+        rel="noopener"
+        className="press glanz mt-7 inline-flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[12px] bg-ink py-2 pl-6 pr-2 text-[17px] font-medium text-white"
+      >
+        Freien Termin wählen
+        <span className="grid size-11 place-items-center rounded-[9px] bg-white text-ink" aria-hidden="true">
+          <IconPfeilRechts className="size-4" />
+        </span>
+        <span className="sr-only"> (öffnet in neuem Tab)</span>
+      </a>
+      <p className="mt-5 text-[14px] text-ink-2">
+        Kein passender Termin dabei? Schreiben Sie mir:{" "}
+        <a href={`mailto:${site.person.email}`} className="text-ink underline underline-offset-4">
+          {site.person.email}
+        </a>
+      </p>
+    </div>
+  );
+}
+
+function Knoepfe({ children }: { children: ReactNode }) {
+  return <div className="mt-8 flex items-center gap-3">{children}</div>;
+}
+
+function Zurueck({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="press min-h-[52px] rounded-[12px] bg-surface-2 px-5 text-[16px] font-medium"
+    >
+      Zurück
+    </button>
   );
 }
 
@@ -338,7 +526,7 @@ function Senden({ children, disabled }: { children: ReactNode; disabled?: boolea
     <button
       type="submit"
       disabled={disabled}
-      className="press inline-flex min-h-[52px] flex-1 items-center justify-between gap-3 rounded-[12px] bg-ink py-2 pl-5 pr-2 text-[16px] font-medium text-white disabled:opacity-60 w-full"
+      className="press glanz inline-flex min-h-[52px] w-full flex-1 items-center justify-between gap-3 rounded-[12px] bg-ink py-2 pl-5 pr-2 text-[16px] font-medium text-white disabled:opacity-60"
     >
       {children}
       <span className="grid size-9 place-items-center rounded-[9px] bg-white text-ink" aria-hidden="true">
@@ -351,49 +539,60 @@ function Senden({ children, disabled }: { children: ReactNode; disabled?: boolea
 function Gruppe({
   legend,
   hinweis,
-  fehler,
   id,
   children,
 }: {
   legend: string;
   hinweis?: string;
-  fehler?: string;
   id: string;
   children: ReactNode;
 }) {
   return (
-    <fieldset aria-describedby={fehler ? `${id}-fehler` : undefined} aria-invalid={!!fehler}>
+    <fieldset id={`${id}-gruppe`}>
       <legend className="text-[15px] font-medium">
         {legend} {hinweis && <span className="font-normal text-ink-2">({hinweis})</span>}
       </legend>
       <div className="mt-2.5">{children}</div>
-      <FeldFehler id={`${id}-fehler`} text={fehler} />
     </fieldset>
   );
 }
 
 function Kachel({
+  id,
   name,
+  value,
   type,
   checked,
   onChange,
   icon,
+  mittig = false,
   children,
 }: {
+  id?: string;
   name: string;
+  value: string;
   type: "radio" | "checkbox";
   checked: boolean;
   onChange: () => void;
   icon?: ReactNode;
+  mittig?: boolean;
   children: ReactNode;
 }) {
   return (
     <label
       className={`press relative flex min-h-[52px] cursor-pointer items-center gap-2.5 rounded-[14px] border px-3.5 py-2.5 text-[14.5px] leading-snug transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink ${
-        checked ? "border-ink bg-ink text-white" : "border-line bg-surface can-hover:border-ink/40"
-      }`}
+        mittig ? "justify-center px-2 text-center" : ""
+      } ${checked ? "border-ink bg-ink text-white" : "border-line bg-surface can-hover:border-ink/40"}`}
     >
-      <input type={type} name={name} checked={checked} onChange={onChange} className="sr-only" />
+      <input
+        id={id}
+        type={type}
+        name={name}
+        value={value}
+        checked={checked}
+        onChange={onChange}
+        className="sr-only"
+      />
       {icon && (
         <span
           className={`grid size-8 shrink-0 place-items-center rounded-[10px] ${
@@ -404,7 +603,7 @@ function Kachel({
           {icon}
         </span>
       )}
-      <span className="flex-1">{children}</span>
+      <span className={mittig ? "" : "flex-1"}>{children}</span>
       {type === "checkbox" && (
         <span
           className={`grid size-5 shrink-0 place-items-center rounded-full ${checked ? "bg-white text-ink" : "border border-line"}`}
@@ -424,33 +623,40 @@ function Feld({
   fehler,
   value,
   onChange,
+  onBlur,
   type = "text",
   inputMode,
   autoComplete,
+  enterKeyHint,
 }: {
-  id: string;
+  id: keyof Daten;
   label: string;
   optional?: boolean;
   fehler?: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur: () => void;
   type?: string;
   inputMode?: "email" | "tel" | "text";
   autoComplete?: string;
+  enterKeyHint?: "next" | "done" | "send";
 }) {
+  const feldId = `feld-${id}`;
   return (
-    <div>
-      <label htmlFor={id} className="text-[15px] font-medium">
+    <div className="min-w-0">
+      <label htmlFor={feldId} className="text-[15px] font-medium">
         {label} {optional && <span className="font-normal text-ink-2">(optional)</span>}
       </label>
       <input
-        id={id}
+        id={feldId}
         name={id}
         type={type}
         inputMode={inputMode}
         autoComplete={autoComplete}
+        enterKeyHint={enterKeyHint}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         required={!optional}
         aria-invalid={!!fehler}
         aria-describedby={fehler ? `${id}-fehler` : undefined}

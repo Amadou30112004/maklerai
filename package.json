@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/ersparnis.test.mjs src/lib/demo/demo.test.mjs"
+    "test": "node --test src/lib/ersparnis.test.mjs src/lib/schema.test.mjs src/lib/demo/demo.test.mjs"
   },
   "dependencies": {
     "next": "16.4.3",

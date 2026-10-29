@@ -50,47 +50,10 @@ export function IconPersonStift(props: IconProps) {
   );
 }
 
-export function IconUhr(props: IconProps) {
-  return (
-    <Base {...props}>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7.5V12l3 2" />
-    </Base>
-  );
-}
-
-export function IconEuro(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M17 6.5A7 7 0 1 0 17 17.5" />
-      <path d="M4.5 10.5h8M4.5 13.5h8" />
-    </Base>
-  );
-}
-
 export function IconHaken(props: IconProps) {
   return (
     <Base {...props}>
       <path d="m5 12.5 4.5 4.5L19 7.5" />
-    </Base>
-  );
-}
-
-export function IconHakenKreis(props: IconProps) {
-  return (
-    <Base {...props}>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="m8.5 12.3 2.4 2.4 4.6-4.9" />
-    </Base>
-  );
-}
-
-export function IconTeam(props: IconProps) {
-  return (
-    <Base {...props}>
-      <circle cx="9" cy="8.5" r="3" />
-      <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
-      <path d="M15.5 5.8a3 3 0 0 1 0 5.4M17.5 14a5.5 5.5 0 0 1 3 5" />
     </Base>
   );
 }
@@ -160,24 +123,6 @@ export function IconKeinTraining(props: IconProps) {
   );
 }
 
-export function IconKompass(props: IconProps) {
-  return (
-    <Base {...props}>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="m15.5 8.5-2 5-5 2 2-5z" />
-    </Base>
-  );
-}
-
-export function IconPinsel(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M19.5 4.5 11 13" />
-      <path d="M11 13c-2-1-4.5 0-5 2.5-.3 1.6-1 2.8-2.5 3.5 3 1 7 .5 8.5-2.5.7-1.4.3-2.7-1-3.5z" />
-    </Base>
-  );
-}
-
 export function IconMail(props: IconProps) {
   return (
     <Base {...props}>
@@ -187,37 +132,120 @@ export function IconMail(props: IconProps) {
   );
 }
 
-export function IconTelefon(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M6.5 3.5h2.5l1.5 4-2 1.3a10 10 0 0 0 6.7 6.7l1.3-2 4 1.5v2.5a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2z" />
-    </Base>
-  );
-}
-
-export function IconChat(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12z" />
-    </Base>
-  );
-}
-
-export function IconFoto(props: IconProps) {
-  return (
-    <Base {...props}>
-      <rect x="3" y="6" width="18" height="13" rx="2.5" />
-      <path d="M8.5 6 10 3.5h4L15.5 6" />
-      <circle cx="12" cy="12.5" r="3.5" />
-    </Base>
-  );
-}
-
 export function IconPdf(props: IconProps) {
   return (
     <Base {...props}>
       <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
       <path d="M14 3v5h5" />
+    </Base>
+  );
+}
+
+// Abtippen: Tastatur
+export function IconTastatur(props: IconProps) {
+  return (
+    <Base {...props}>
+      <rect x="2.5" y="6" width="19" height="12" rx="2.5" />
+      <path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M6 13.5h.01M18 10h.01M8.5 14.5h7" />
+    </Base>
+  );
+}
+
+// Nachhaken: Sprechblase mit Fragezeichen
+export function IconNachhaken(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4 5.5h16v10.5H9l-5 4z" />
+      <path d="M10 9.2a2 2 0 1 1 2.6 1.9c-.4.2-.6.5-.6.9v.4M12 14.2h.01" />
+    </Base>
+  );
+}
+
+// Suchen: Lupe über Ordner
+export function IconLupe(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M3 7.5V18a1.5 1.5 0 0 0 1.5 1.5H11" />
+      <path d="M3 7.5V6a1.5 1.5 0 0 1 1.5-1.5h4l2 2h7A1.5 1.5 0 0 1 20 8v2.5" />
+      <circle cx="16" cy="15.5" r="3" />
+      <path d="m18.2 17.7 2.3 2.3" />
+    </Base>
+  );
+}
+
+// Änderungen: mehrere Briefe
+export function IconBriefe(props: IconProps) {
+  return (
+    <Base {...props}>
+      <rect x="3" y="7" width="14" height="11" rx="1.8" />
+      <path d="m3.5 8 6.5 5 6.5-5" />
+      <path d="M7 4.5h12.2A1.8 1.8 0 0 1 21 6.3V15" />
+    </Base>
+  );
+}
+
+// Immer dieselben Fragen: zwei Sprechblasen
+export function IconFragen(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M3 4.5h11v7.5H7.5L3 15.5z" />
+      <path d="M17 8.5h4V19l-3.5-2.8H10V15" />
+    </Base>
+  );
+}
+
+// Verstreute Kanäle: vier Punkte, die auseinanderlaufen
+export function IconKanaele(props: IconProps) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="5" cy="5" r="1.6" />
+      <circle cx="19" cy="5" r="1.6" />
+      <circle cx="5" cy="19" r="1.6" />
+      <circle cx="19" cy="19" r="1.6" />
+      <path d="m6.3 6.3 4.2 4.2M17.7 6.3l-4.2 4.2M6.3 17.7l4.2-4.2M17.7 17.7l-4.2-4.2" />
+    </Base>
+  );
+}
+
+// Eigenes Projekt: Puzzleteil
+export function IconPuzzle(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M5 8h3.2a2 2 0 1 1 3.6 0H15v3.2a2 2 0 1 1 0 3.6V18h-3.2a2 2 0 1 0-3.6 0H5v-3.2a2 2 0 1 0 0-3.6z" />
+    </Base>
+  );
+}
+
+// Keine neue Software: Bildschirm mit Haken
+export function IconBildschirm(props: IconProps) {
+  return (
+    <Base {...props}>
+      <rect x="3" y="4" width="18" height="12.5" rx="2" />
+      <path d="M8.5 20h7M12 16.5V20" />
+      <path d="m9 10.3 2 2 4-4" />
+    </Base>
+  );
+}
+
+// Kein Datenumzug: Datenbank
+export function IconDatenbank(props: IconProps) {
+  return (
+    <Base {...props}>
+      <ellipse cx="12" cy="6" rx="7" ry="2.8" />
+      <path d="M5 6v12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6" />
+      <path d="M5 12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8" />
+    </Base>
+  );
+}
+
+// Persönlicher Kontakt: Person mit Herz
+export function IconPersoenlich(props: IconProps) {
+  return (
+    <Base {...props}>
+      <circle cx="9.5" cy="8" r="3.5" />
+      <path d="M3 20c0-3.6 2.9-6 6.5-6 1.5 0 2.8.4 3.9 1.1" />
+      <path d="M17.5 20.5s-3.5-2.1-3.5-4.5a1.9 1.9 0 0 1 3.5-1 1.9 1.9 0 0 1 3.5 1c0 2.4-3.5 4.5-3.5 4.5z" />
     </Base>
   );
 }

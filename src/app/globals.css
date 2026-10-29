@@ -99,11 +99,120 @@ section[id] {
   background: var(--grad-soft);
 }
 
-/* Weiche Orange-Fläche mit Lichtpunkt für Visuals */
-.glow-panel {
+/* ------------------------------------------------------------------
+   Akzente: Leuchtflächen, Pinselstrich, Glanz, Lichtfleck
+   Nur Orange-Töne aus den Tokens und Schwarz. Alle Leuchtflächen ohne
+   Pointer und ohne Einfluss aufs Layout.
+   ------------------------------------------------------------------ */
+
+.leuchten {
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(255 95 58 / 0.95) 0%,
+    rgb(255 179 107 / 0.6) 45%,
+    transparent 100%
+  );
+  filter: blur(48px);
+  opacity: 0.35;
+  z-index: 0;
+}
+.hero-leuchten {
+  opacity: 0.35;
+}
+.dunkel-leuchten {
+  opacity: 0.3;
+}
+.termin-leuchten {
+  opacity: 0.22;
+}
+/* Mobil kleiner und ruhiger, damit die Seite flüssig bleibt */
+@media (max-width: 767px) {
+  .leuchten {
+    filter: blur(32px);
+  }
+  .hero-leuchten {
+    inset: 10% 0;
+    opacity: 0.28;
+  }
+}
+
+/* Pinselstrich unter „Ihren Kunden.“ */
+.pinsel-strich {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* Glanzlicht über dunklen Buttons, nur beim Hover mit Maus */
+.glanz {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glanz::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 179 107 / 0.55) 48%, rgb(255 95 58 / 0.35) 54%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+/* Lichtfleck auf den Projekt-Karten folgt der Maus (Position aus LichtEffekt) */
+.licht-karte::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(380px circle at var(--x, 50%) var(--y, 0%), rgb(255 95 58 / 0.13), transparent 65%);
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+}
+.licht-karte::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(240px circle at var(--x, 50%) var(--y, 0%), rgb(255 95 58 / 0.7), transparent 70%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+}
+.licht-an .licht-karte:hover::before,
+.licht-an .licht-karte:hover::after {
+  opacity: 1;
+}
+
+/* Kacheln „Kennen Sie das?“: kleiner Lichtschein hinter dem Icon beim Hover */
+.alltag-schein {
+  background: radial-gradient(closest-side, rgb(255 95 58 / 0.45), transparent);
+  opacity: 0;
+  transform: scale(0.7);
+  transition:
+    opacity 250ms ease-out,
+    transform 250ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .alltag-kachel:hover .alltag-schein {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Rechner: Ergebnis als Orange-Karte */
+.rechner-ergebnis {
   background:
-    radial-gradient(120% 90% at 85% 0%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
-    var(--grad);
+    radial-gradient(90% 70% at 100% 100%, rgb(255 255 255 / 0.22) 0%, transparent 60%),
+    linear-gradient(315deg, var(--orange-1) 0%, var(--orange-2) 70%);
 }
 
 .press {
@@ -133,11 +242,6 @@ details > summary::-webkit-details-marker {
    Ausgelöst wird über .is-visible (einmalig). Nur transform, opacity
    und bei SVG-Linien stroke-dashoffset.
    ------------------------------------------------------------------ */
-
-.kreis-bogen {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
 
 .wa-tippen {
   opacity: 0;
@@ -177,30 +281,59 @@ details > summary::-webkit-details-marker {
     animation: hero-schweben var(--dauer, 7s) ease-in-out var(--sd, 0s) infinite;
   }
 
-  /* Kreislauf: Pfeile zeichnen sich nacheinander, danach die Stationen */
-  .anim-bereit .kreis .kreis-bogen {
-    transition: stroke-dashoffset 450ms ease-out;
-    transition-delay: calc(var(--i, 0) * 450ms);
+  /* Pinselstrich zeichnet sich beim Laden einmal von links nach rechts */
+  .pinsel-strich {
+    animation: pinsel-zeichnen 600ms ease-out 350ms both;
   }
-  .anim-bereit .kreis:not(.is-visible) .kreis-bogen {
-    stroke-dashoffset: 1;
+  .pinsel-strich-2 {
+    animation-delay: 550ms;
   }
-  .anim-bereit .kreis .kreis-spitze {
-    transition: opacity 150ms ease-out;
-    transition-delay: calc(var(--i, 0) * 450ms + 400ms);
+
+  /* Leuchtflächen bewegen sich sehr langsam, nur ab Tablet */
+  @media (min-width: 768px) {
+    .hero-leuchten {
+      animation: leuchten-treiben 26s ease-in-out infinite alternate;
+    }
+    .dunkel-leuchten {
+      animation: leuchten-treiben 30s ease-in-out -8s infinite alternate;
+    }
   }
-  .anim-bereit .kreis:not(.is-visible) .kreis-spitze {
-    opacity: 0;
+
+  /* Glanzlicht läuft beim Hover einmal über den Button */
+  @media (hover: hover) and (pointer: fine) {
+    .glanz:hover::after {
+      transform: translateX(120%);
+      transition: transform 700ms ease-out;
+    }
   }
-  .anim-bereit .kreis .kreis-station {
-    transition:
-      opacity 350ms ease-out,
-      transform 350ms ease-out;
-    transition-delay: calc(1400ms + var(--i, 0) * 100ms);
+
+  /* Icons in „Kennen Sie das?“ pulsieren beim Einblenden einmal kurz */
+  .anim-bereit [data-stagger].is-visible .alltag-icon {
+    animation: icon-puls 520ms ease-out both;
+    animation-delay: calc(var(--i, 0) * 60ms + 250ms);
   }
-  .anim-bereit .kreis:not(.is-visible) .kreis-station {
-    opacity: 0;
-    transform: scale(0.94);
+
+  /* Formular: Höhe, Fortschritt und Schrittwechsel */
+  .formular-huelle {
+    transition: height 280ms ease-out;
+  }
+  .fortschritt {
+    transition: transform 300ms ease-out;
+  }
+  .schritt-rein-vor {
+    animation: schritt-rein-rechts 170ms ease-out both;
+  }
+  .schritt-rein-zurueck {
+    animation: schritt-rein-links 170ms ease-out both;
+  }
+  .schritt-raus-vor {
+    animation: schritt-raus-links 130ms ease-out both;
+  }
+  .schritt-raus-zurueck {
+    animation: schritt-raus-rechts 130ms ease-out both;
+  }
+  .haken-pop {
+    animation: haken-pop 360ms ease-out 120ms both;
   }
 
   /* Gestaffelte Elemente in Vorschauen (WhatsApp, Schadenmeldung) */
@@ -279,6 +412,78 @@ details > summary::-webkit-details-marker {
 .seq-haken path {
   stroke-dasharray: 1;
   stroke-dashoffset: 0;
+}
+
+@keyframes pinsel-zeichnen {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes leuchten-treiben {
+  from {
+    transform: translate3d(-4%, 3%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, -4%, 0) scale(1.08);
+  }
+}
+
+@keyframes icon-puls {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes schritt-rein-rechts {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes schritt-rein-links {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes schritt-raus-links {
+  to {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+@keyframes schritt-raus-rechts {
+  to {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+
+@keyframes haken-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes hero-hoch {
@@ -513,16 +718,16 @@ label,
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: var(--surface);
-  border: 2px solid var(--ink);
-  box-shadow: 0 4px 12px -4px rgb(18 18 18 / 0.35);
+  background: var(--grad);
+  border: 3px solid var(--surface);
+  box-shadow: 0 4px 14px -4px rgb(232 80 30 / 0.6);
 }
 .regler::-moz-range-thumb {
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: var(--surface);
-  border: 2px solid var(--ink);
+  background: var(--grad);
+  border: 3px solid var(--surface);
 }
 .regler:focus-visible {
   outline: none;

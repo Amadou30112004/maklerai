@@ -81,7 +81,7 @@ export function Rechner() {
   return (
     <section id="rechner" aria-labelledby="rechner-titel" className="py-16 sm:py-24">
       <Container>
-        <SectionHead id="rechner-titel" eyebrow="Ersparnisrechner" titel="Was spart Ihr Büro? Rechnen Sie selbst." />
+        <SectionHead id="rechner-titel" eyebrow="Ersparnisrechner" titel="Wie viel Zeit könnten Sie beim Kunden sein?" />
 
         <div className="mt-10 grid gap-5 lg:grid-cols-[1.15fr_1fr]">
           <div className="rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] sm:p-8">
@@ -121,33 +121,35 @@ export function Rechner() {
             </div>
           </div>
 
-          <div className="glow-panel flex flex-col justify-between rounded-[22px] p-6 text-ink sm:p-8">
+          {/* Ergebnis als Blickfang: Orange-Verlauf, große weiße Zahlen, kleine Schrift dunkel für genug Kontrast */}
+          <div className="flex flex-col gap-4">
             <div
               ref={ergebnisRef}
-              className="rounded-[18px] bg-surface p-6 shadow-[var(--shadow-float)]"
+              className="rechner-ergebnis relative flex-1 overflow-hidden rounded-[22px] p-6 shadow-[var(--shadow-float)] sm:p-8"
               aria-live={faktor < 1 ? "off" : "polite"}
             >
-              <p className="text-[13px] uppercase tracking-[0.1em] text-ink-2">Gesparte Zeit pro Monat</p>
-              <p className="mt-2 text-[48px] font-medium leading-none tracking-[-0.03em] tabular-nums sm:text-[56px]">
-                {formatStunden(zahl(e.stundenProMonat))} <span className="text-[24px] text-ink-2">Std.</span>
+              <p className="text-[13px] font-medium uppercase tracking-[0.1em] text-ink">Gesparte Zeit pro Monat</p>
+              <p className="mt-3 text-[56px] font-medium leading-none tracking-[-0.03em] text-white tabular-nums sm:text-[72px]">
+                {formatStunden(zahl(e.stundenProMonat))} <span className="text-[28px]">Std.</span>
               </p>
-              <div className="mt-6 grid grid-cols-2 gap-4 border-t border-line pt-5">
+              <div className="mt-8 grid grid-cols-2 gap-4 border-t border-white/40 pt-5">
                 <div>
-                  <p className="text-[13px] text-ink-2">pro Monat</p>
-                  <p className="mt-1 text-[28px] font-medium tracking-[-0.03em] tabular-nums sm:text-[32px]">
+                  <p className="text-[13px] font-medium text-ink">pro Monat</p>
+                  <p className="mt-1 text-[32px] font-medium tracking-[-0.03em] text-white tabular-nums sm:text-[40px]">
                     {formatEuro(zahl(e.euroProMonat))}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[13px] text-ink-2">pro Jahr</p>
-                  <p className="mt-1 text-[28px] font-medium tracking-[-0.03em] tabular-nums sm:text-[32px]">
+                  <p className="text-[13px] font-medium text-ink">pro Jahr</p>
+                  <p className="mt-1 text-[32px] font-medium tracking-[-0.03em] text-white tabular-nums sm:text-[40px]">
                     {formatEuro(zahl(e.euroProJahr))}
                   </p>
                 </div>
               </div>
             </div>
-            <p className="mt-5 text-[14px] leading-relaxed text-ink">
-              Beispielrechnung. Ihre tatsächliche Ersparnis hängt von Ihrem Büro ab.
+            <p className="px-1 text-[14px] leading-relaxed text-ink-2">
+              So rechnen wir: Vorgänge pro Monat mal gesparte Minuten, mal Stundensatz. Ihre Werte stellen Sie selbst
+              ein. Beispielrechnung, Ihre tatsächliche Ersparnis hängt von Ihrem Büro ab.
             </p>
           </div>
         </div>

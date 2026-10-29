@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from "react";
 import type { LoesungId } from "@/lib/schema";
-import { IconDokumentBlitz, IconPersonStift, IconSprechblaseFunken } from "./ui/Icons";
+import { IconDokumentBlitz, IconPersonStift, IconPuzzle, IconSprechblaseFunken } from "./ui/Icons";
 
 export type Loesung = {
   id: LoesungId;
@@ -44,5 +44,15 @@ export const loesungen: Loesung[] = [
     ],
     icon: IconSprechblaseFunken,
     format: "breit",
+  },
+  {
+    id: "eigenes",
+    // Im Formular heißt die Kachel „Etwas anderes“
+    kurz: "Etwas anderes",
+    titel: "Ihr eigenes Projekt",
+    text: "Sie haben eine Aufgabe im Innendienst, die immer wieder Zeit kostet? Wir prüfen gemeinsam, ob sie sich automatisieren lässt.",
+    punkte: [],
+    icon: IconPuzzle,
+    format: "klein",
   },
 ];

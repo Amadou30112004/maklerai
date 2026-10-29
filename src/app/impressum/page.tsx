@@ -1,5 +1,6 @@
 // Gerüst. Vor dem Livegang rechtlich prüfen lassen.
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Rechtsseite } from "@/components/Rechtsseite";
 import { site } from "@/config/site";
 
@@ -22,10 +23,7 @@ export default function Impressum() {
       <p>
         E-Mail: <a href={`mailto:${site.person.email}`} className="underline underline-offset-4">{site.person.email}</a>
         <br />
-        Telefon:{" "}
-        <a href={site.person.telefonLink} className="underline underline-offset-4">
-          {site.person.telefonAnzeige}
-        </a>
+        Kontaktformular: <Link href="/#pilot" className="underline underline-offset-4">Termin vereinbaren</Link>
       </p>
 
       <h2>Umsatzsteuer</h2>

@@ -2,46 +2,39 @@ import { site } from "@/config/site";
 import { Container, SectionHead } from "./ui/Basis";
 import { IconPlus } from "./ui/Icons";
 
+// Höchstens neun Fragen
 const fragen: { f: string; a: string }[] = [
   {
+    f: "Muss ich etwas umstellen?",
+    a: "Nein. Sie bleiben bei VEMA, Ihrem Pool und Ihrer Maklersoftware. Wir setzen dort an, wo trotzdem noch Handarbeit bei Ihnen landet.",
+  },
+  {
     f: "Ich habe doch schon die App meines Pools.",
-    a: `${site.name} ergänzt sie. Viele Kunden laden keine App herunter, ein Link funktioniert sofort. Ohne Maklermandat, ohne Bestandsübertragung, und unabhängig davon, welchen Pool Sie nutzen.`,
+    a: "Gut so. Was Ihr Pool schon löst, bauen wir nicht nach. Wir schauen auf die Arbeit, die trotzdem noch von Hand bei Ihnen landet. Kann Ihr Pool etwas schon, sagen wir Ihnen das.",
+  },
+  {
+    f: "Merken meine Kunden etwas davon?",
+    a: "Nur, dass es schneller geht. Der Kontakt bleibt bei Ihnen. Wenn Kunden etwas nutzen, dann höchstens einen einfachen Link, keine App.",
+  },
+  {
+    f: "Was passiert, wenn es mir nichts bringt?",
+    a: "Dann hören wir auf. Der Start ist kostenlos, und Sie gehen keine Verpflichtung ein.",
+  },
+  {
+    f: "Was kostet der Start, und wie läuft er ab?",
+    a: "Der Start ist kostenlos. Im Termin klären wir, wo in Ihrem Innendienst die meiste Handarbeit liegt. Danach richten wir eine einzige Automation ein und testen sie mit Ihnen. Was eine dauerhafte Lösung kostet, besprechen wir offen, bevor Sie sich entscheiden.",
   },
   {
     f: "Brauche ich eine Schnittstelle zu meinem Verwaltungsprogramm?",
-    a: "Nein. Sie bekommen die Meldung als PDF und als E-Mail-Entwurf und legen sie ab wie gewohnt.",
-  },
-  {
-    f: "Muss mein Kunde eine App installieren?",
-    a: "Nein. Der Link öffnet sich im Browser, am Handy oder am Rechner.",
-  },
-  {
-    f: "Wie kommt der Link auf meine Website?",
-    a: "Sie bekommen einen fertigen Button „Jetzt Schaden melden“ für Fußzeile, Menü oder Kontaktseite. Er funktioniert mit jedem Website-Baukasten.",
-  },
-  {
-    f: "Für welche Sparten eignet sich die Schadenmeldung?",
-    a: "Zum Start für Kfz und die privaten Sachsparten Hausrat, Wohngebäude, Privathaftpflicht und Glas. Weitere Sparten richten wir auf Anfrage ein.",
+    a: "Nein. Sie bekommen die vorbereiteten Vorgänge zum Beispiel als PDF und als E-Mail-Entwurf und legen sie ab wie gewohnt.",
   },
   {
     f: "Was muss ich beim Datenschutz beachten?",
     a: `Sie nennen ${site.name} in Ihrer Datenschutzerklärung als Auftragsverarbeiter. Den Textbaustein und den AV-Vertrag bekommen Sie von uns.`,
   },
   {
-    f: "Was kostet der Start?",
-    a: "Der Einstieg ist kostenlos. Im Gegenzug wünschen wir uns ehrliches Feedback aus Ihrem Büroalltag.",
-  },
-  {
-    f: "Wie läuft der Start ab?",
-    a: "Im Erstgespräch klären wir, welche Lösung Ihr Büro am meisten entlastet. Danach richten wir sie für Sie ein. Den genauen Zeitplan besprechen wir gemeinsam.",
-  },
-  {
     f: "Ist ein WhatsApp-Kanal datenschutzkonform?",
     a: "Wir nutzen die offizielle WhatsApp-Business-Plattform, keine privaten Handys. Die datenschutzrechtliche Einordnung für Ihr Büro klären wir vor dem Start gemeinsam mit Ihnen.",
-  },
-  {
-    f: "Darf ich per WhatsApp Newsletter und Angebote verschicken?",
-    a: "Ja, an Kunden, die vorher eingewilligt haben. Wie Sie die Einwilligung sauber einholen, zum Beispiel über Ihre Website oder den ersten Chat, richten wir gemeinsam mit Ihnen ein. Die Kosten, die WhatsApp für solche Nachrichten berechnet, besprechen wir im Erstgespräch.",
   },
   {
     f: "Prüft die KI meine Verträge?",
@@ -51,7 +44,7 @@ const fragen: { f: string; a: string }[] = [
 
 export function Faq() {
   return (
-    <section id="faq" aria-labelledby="faq-titel" className="py-16 sm:py-24">
+    <section id="faq" aria-labelledby="faq-titel" className="bg-surface-2 py-16 sm:py-24">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">

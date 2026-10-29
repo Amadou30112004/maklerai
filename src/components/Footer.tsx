@@ -10,8 +10,8 @@ export function Footer() {
         <div className="max-w-[360px]">
           <Logo />
           <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
-            Digitalisierung des Innendienstes für kleine Versicherungsmaklerbüros. Wir richten Automationen für Ihr Büro
-            ein, Ihr Team prüft und gibt frei.
+            Wir automatisieren den Innendienst von Versicherungsmaklern, ohne Umstellung. Die KI bereitet vor, Ihr Team
+            prüft und gibt frei.
           </p>
         </div>
         <div className="text-[15px] leading-relaxed">
@@ -19,10 +19,6 @@ export function Footer() {
           <p className="mt-2 text-ink-2">{site.person.name}</p>
           <a href={`mailto:${site.person.email}`} className="text-ink-2 underline decoration-line underline-offset-4 can-hover:text-ink">
             {site.person.email}
-          </a>
-          <br />
-          <a href={site.person.telefonLink} className="text-ink-2 underline decoration-line underline-offset-4 can-hover:text-ink">
-            {site.person.telefonAnzeige}
           </a>
           <p className="text-ink-2">
             {site.person.strasse}

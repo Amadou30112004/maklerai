@@ -651,7 +651,7 @@ function DemoLeiste({ farbe, onFarbe }: { farbe: Farbe; onFarbe: (f: Farbe) => v
             ))}
           </div>
           <Link
-            href="/#loesungen"
+            href="/#projekte"
             className="ml-1 inline-flex min-h-[44px] items-center whitespace-nowrap rounded-[10px] px-2 text-[13px] font-medium underline decoration-line underline-offset-4"
           >
             Zur Website

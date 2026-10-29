@@ -1,217 +1,174 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { Container, Eyebrow, PrimaryButton } from "./ui/Basis";
-import { IconDokumentBlitz, IconFoto, IconPdf, IconPfeilRechts } from "./ui/Icons";
-
-const sparten = ["Kfz", "Hausrat", "Wohngebäude", "Privathaftpflicht", "Glas", "weitere auf Anfrage"];
+import type { CSSProperties, ReactNode } from "react";
+import { Container, Eyebrow, Leuchten, TerminButton } from "./ui/Basis";
+import { IconHaken, IconPersonStift, IconPfeilRechts, IconDokumentBlitz, IconSprechblaseFunken } from "./ui/Icons";
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero-titel" className="pb-16 pt-10 sm:pt-16">
+    <section aria-labelledby="hero-titel" className="relative overflow-x-clip pb-16 pt-10 sm:pb-24 sm:pt-16">
       <Container>
-        <div className="mx-auto max-w-[860px] text-center">
-          <div>
-            <Eyebrow>Digitalisierung für Maklerbüros</Eyebrow>
-            <h1
-              id="hero-titel"
-              className="mt-6 text-[40px] leading-[1.02] sm:text-[60px] lg:text-[72px]"
-            >
-              Wir digitalisieren den Innendienst Ihres Maklerbüros.
+        <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
+          <div className="relative z-10">
+            <Eyebrow>Für Versicherungsmakler</Eyebrow>
+            <h1 id="hero-titel" className="mt-6 text-[40px] leading-[1.04] sm:text-[56px] lg:text-[64px]">
+              Weniger Backoffice. Mehr Zeit bei{" "}
+              <span className="pinsel relative inline-block whitespace-nowrap">
+                Ihren Kunden.
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 300 24"
+                  preserveAspectRatio="none"
+                  className="absolute -bottom-[0.12em] left-0 h-[0.28em] w-full overflow-visible"
+                >
+                  <defs>
+                    <linearGradient id="pinsel-grad" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stopColor="#FFB36B" />
+                      <stop offset="55%" stopColor="#FF5F3A" />
+                      <stop offset="100%" stopColor="#E8501E" />
+                    </linearGradient>
+                  </defs>
+                  {/* Pinselstrich: dicker in der Mitte, ausgefranste Enden */}
+                  <path
+                    d="M4 15 C 60 7, 120 6, 180 9 S 270 13, 296 8"
+                    pathLength={1}
+                    fill="none"
+                    stroke="url(#pinsel-grad)"
+                    strokeWidth="9"
+                    strokeLinecap="round"
+                    className="pinsel-strich"
+                  />
+                  <path
+                    d="M30 19 C 90 13, 170 13, 250 15"
+                    pathLength={1}
+                    fill="none"
+                    stroke="url(#pinsel-grad)"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    opacity="0.55"
+                    className="pinsel-strich pinsel-strich-2"
+                  />
+                </svg>
+              </span>
             </h1>
-            <p className="mx-auto mt-6 max-w-[640px] text-[17px] leading-relaxed text-ink-2 sm:text-lg">
-              Weniger Handarbeit, mehr Zeit für Beratung. Schadenmeldungen, Kundenanfragen und Änderungen
-              laufen automatisch, Ihr Team prüft nur noch und gibt frei.
+            <p className="mt-7 max-w-[560px] text-[17px] leading-relaxed text-ink-2 sm:text-lg">
+              Wir automatisieren die Routinearbeit in Ihrem Innendienst. Sie arbeiten weiter mit VEMA, Ihrem Pool und
+              Ihren gewohnten Programmen. Ohne Umstellung.
             </p>
-            <div className="mt-8 flex flex-col items-center gap-4">
-              <PrimaryButton href="#pilot" size="lg">
-                Kostenloses Erstgespräch
-              </PrimaryButton>
+            <div className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-start">
+              <div className="flex flex-col items-start gap-2.5">
+                <TerminButton size="lg" />
+                <p className="whitespace-nowrap text-[13px] text-ink-2">Kostenlos · 30 Minuten · Ohne Verpflichtung</p>
+              </div>
               <Link
                 href="/demo/schadenmeldung"
-                className="press inline-flex min-h-[48px] items-center gap-2 rounded-[12px] border border-line bg-surface px-5 text-[15px] font-medium can-hover:border-ink/30"
+                className="press inline-flex min-h-[52px] items-center gap-2 rounded-[12px] border border-line bg-surface px-5 text-[15px] font-medium can-hover:border-ink/30 sm:whitespace-nowrap"
               >
-                Schadenmeldung selbst ausprobieren
+                Beispiel ansehen: Schadenmeldung
                 <IconPfeilRechts className="size-4" />
               </Link>
-              <p className="text-[13px] text-ink-2">
-                Kostenloses Erstgespräch · ohne Vertragsbindung · persönlich betreut
-              </p>
             </div>
           </div>
-        </div>
 
-        <div className="glow-panel relative mt-14 overflow-hidden rounded-[28px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
-          <div className="grid grid-cols-1 items-center gap-5 md:grid-cols-3 md:gap-6">
-            {[
-              { karte: <WebsiteKarte />, ankunft: "100ms", schweben: "0s", dauer: "7s" },
-              { karte: <HandyKarte />, ankunft: "220ms", schweben: "-2.4s", dauer: "8s" },
-              { karte: <MailKarte />, ankunft: "340ms", schweben: "-4.6s", dauer: "6.5s" },
-            ].map((k, i) => (
-              <div key={i} className="hero-ankunft min-w-0" style={{ "--d": k.ankunft } as CSSProperties}>
-                <div className="hero-schweben" style={{ "--sd": k.schweben, "--dauer": k.dauer } as CSSProperties}>
-                  {k.karte}
+          {/* Beispieldaten erfunden, nur zur Veranschaulichung */}
+          <div className="relative">
+            <Leuchten className="hero-leuchten -inset-x-10 -inset-y-12 sm:-inset-16" />
+            <div className="relative mx-auto flex max-w-[440px] flex-col gap-4 lg:max-w-none">
+              {[
+                {
+                  karte: (
+                    <Vorgang
+                      icon={<IconPersonStift className="size-[18px]" />}
+                      titel="Adressänderung Frau Becker"
+                      pill="vorbereitet"
+                      zeile="an alle Versicherer, wartet auf Freigabe"
+                    />
+                  ),
+                  versatz: "lg:mr-16",
+                  ankunft: "100ms",
+                  schweben: "0s",
+                  dauer: "7s",
+                },
+                {
+                  karte: (
+                    <Vorgang
+                      icon={<IconDokumentBlitz className="size-[18px]" />}
+                      titel="Schadenmeldung Kfz, Herr Weber"
+                      pill="vollständig"
+                      haken
+                      zeile="Fotos, Kennzeichen und Hergang liegen vor"
+                    />
+                  ),
+                  versatz: "lg:ml-16",
+                  ankunft: "220ms",
+                  schweben: "-2.4s",
+                  dauer: "8s",
+                },
+                {
+                  karte: (
+                    <Vorgang
+                      icon={<IconSprechblaseFunken className="size-[18px]" />}
+                      titel="Antwortentwurf WhatsApp"
+                      pill="KI-Entwurf"
+                      zeile="Ihr Team prüft und sendet"
+                      knopf
+                    />
+                  ),
+                  versatz: "lg:mr-8",
+                  ankunft: "340ms",
+                  schweben: "-4.6s",
+                  dauer: "6.5s",
+                },
+              ].map((k, i) => (
+                <div key={i} className={`hero-ankunft min-w-0 ${k.versatz}`} style={{ "--d": k.ankunft } as CSSProperties}>
+                  <div className="hero-schweben" style={{ "--sd": k.schweben, "--dauer": k.dauer } as CSSProperties}>
+                    {k.karte}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          <span className="mr-1 text-[13px] text-ink-2">Schadenmeldung für</span>
-          {sparten.map((s) => (
-            <span
-              key={s}
-              className="rounded-full border border-line bg-surface px-3 py-1.5 text-[13px] text-ink"
-            >
-              {s}
-            </span>
-          ))}
         </div>
       </Container>
     </section>
   );
 }
 
-function Fensterleiste({ titel }: { titel: string }) {
+function Vorgang({
+  icon,
+  titel,
+  pill,
+  zeile,
+  haken = false,
+  knopf = false,
+}: {
+  icon: ReactNode;
+  titel: string;
+  pill: string;
+  zeile: string;
+  haken?: boolean;
+  knopf?: boolean;
+}) {
   return (
-    <div className="flex items-center gap-1.5 border-b border-line px-4 py-2.5">
-      <span className="size-2 rounded-full bg-surface-2" />
-      <span className="size-2 rounded-full bg-surface-2" />
-      <span className="size-2 rounded-full bg-surface-2" />
-      <span className="ml-2 truncate rounded-full bg-bg px-2.5 py-0.5 text-[10px] text-ink-2">{titel}</span>
-    </div>
-  );
-}
-
-function WebsiteKarte() {
-  return (
-    <div
-      aria-hidden="true"
-      className="rounded-[18px] bg-surface shadow-[var(--shadow-float)] md:-rotate-2 md:translate-y-4"
-    >
-      <Fensterleiste titel="www.ihr-maklerbuero.de" />
-      <div className="p-5">
-        <div className="flex items-center justify-between">
-          <span className="h-2.5 w-20 rounded-full bg-ink/80" />
-          <div className="flex gap-2">
-            <span className="h-2 w-8 rounded-full bg-surface-2" />
-            <span className="h-2 w-8 rounded-full bg-surface-2" />
-            <span className="h-2 w-8 rounded-full bg-surface-2" />
-          </div>
-        </div>
-        <div className="mt-6 space-y-2">
-          <span className="block h-3.5 w-4/5 rounded-full bg-ink/85" />
-          <span className="block h-3.5 w-3/5 rounded-full bg-ink/85" />
-          <span className="block h-2 w-11/12 rounded-full bg-surface-2" />
-          <span className="block h-2 w-3/4 rounded-full bg-surface-2" />
-        </div>
-        <div className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-accent px-3.5 py-2.5 text-[13px] font-medium text-white">
-          <IconDokumentBlitz className="size-4" />
-          Jetzt Schaden melden
-        </div>
-        <div className="mt-6 grid grid-cols-3 gap-2">
-          <span className="h-12 rounded-[10px] bg-bg" />
-          <span className="h-12 rounded-[10px] bg-bg" />
-          <span className="h-12 rounded-[10px] bg-bg" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HandyKarte() {
-  return (
-    <div aria-hidden="true" className="mx-auto w-full max-w-[290px] md:-translate-y-3">
-      <div className="rounded-[34px] bg-ink p-2 shadow-[var(--shadow-float)]">
-        <div className="rounded-[27px] bg-surface px-4 pb-5 pt-3">
-          <div className="mx-auto h-1.5 w-16 rounded-full bg-surface-2" />
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-[13px] font-medium">Schaden melden</span>
-            <span className="text-[11px] text-ink-2">Schritt 2 von 3</span>
-          </div>
-          <div className="mt-2 flex gap-1">
-            <span className="h-1 flex-1 rounded-full bg-accent" />
-            <span className="h-1 flex-1 rounded-full bg-accent" />
-            <span className="h-1 flex-1 rounded-full bg-surface-2" />
-          </div>
-          <MiniFeld label="Sparte" wert="Hausrat" />
-          <MiniFeld label="Was ist passiert?" wert="Wasser aus der Waschmaschine, Laminat im Flur ist aufgequollen." mehrzeilig />
-          <MiniFeld label="Schadentag" wert="14.03." />
-          <p className="mt-3 text-[11px] text-ink-2">Fotos</p>
-          <div className="mt-1.5 grid grid-cols-3 gap-1.5">
-            <span className="bg-grad-soft grid aspect-square place-items-center rounded-[10px] text-orange-3">
-              <IconFoto className="size-4" />
-            </span>
-            <span className="bg-grad-soft grid aspect-square place-items-center rounded-[10px] text-orange-3">
-              <IconFoto className="size-4" />
-            </span>
-            <span className="grid aspect-square place-items-center rounded-[10px] border border-dashed border-line text-[18px] text-ink-2">
-              +
+    <div aria-hidden="true" className="rounded-[18px] bg-surface p-4 shadow-[var(--shadow-float)] sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="bg-grad grid size-9 shrink-0 place-items-center rounded-[11px] text-white">{icon}</span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+            <p className="text-[14.5px] font-medium leading-snug">{titel}</p>
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#FFE6DB] px-2.5 py-0.5 text-[11px] font-medium text-[#B23A12]">
+              {haken && <IconHaken className="size-3" strokeWidth={2.4} />}
+              {pill}
             </span>
           </div>
-          <div className="mt-4 rounded-[10px] bg-ink py-2.5 text-center text-[12px] font-medium text-white">
-            Weiter
-          </div>
+          <p className="mt-1 text-[13px] leading-snug text-ink-2">{zeile}</p>
+          {knopf && (
+            <div className="mt-3 flex justify-end gap-2 text-[12px]">
+              <span className="rounded-[9px] bg-surface-2 px-3 py-1.5">Bearbeiten</span>
+              <span className="rounded-[9px] bg-ink px-3 py-1.5 font-medium text-white">Senden</span>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function MiniFeld({ label, wert, mehrzeilig = false }: { label: string; wert: string; mehrzeilig?: boolean }) {
-  return (
-    <div className="mt-3">
-      <p className="text-[11px] text-ink-2">{label}</p>
-      <div
-        className={`mt-1 rounded-[9px] border border-line bg-bg px-2.5 py-2 text-[12px] leading-snug ${
-          mehrzeilig ? "min-h-[48px]" : ""
-        }`}
-      >
-        {wert}
-      </div>
-    </div>
-  );
-}
-
-function MailKarte() {
-  return (
-    <div
-      aria-hidden="true"
-      className="rounded-[18px] bg-surface shadow-[var(--shadow-float)] md:rotate-2 md:translate-y-6"
-    >
-      <Fensterleiste titel="Entwurf" />
-      <div className="space-y-2.5 p-5 text-[12px]">
-        <MailZeile label="An" wert="schaden@versicherer.de" />
-        <MailZeile label="Betreff" wert="Schadenmeldung Hausrat, Vertrag [NR]" />
-        <div className="space-y-1.5 pt-2">
-          <span className="block h-2 w-full rounded-full bg-surface-2" />
-          <span className="block h-2 w-11/12 rounded-full bg-surface-2" />
-          <span className="block h-2 w-4/5 rounded-full bg-surface-2" />
-          <span className="block h-2 w-2/3 rounded-full bg-surface-2" />
-        </div>
-        <div className="flex items-center gap-2.5 rounded-[12px] border border-line p-2.5">
-          <span className="bg-grad grid size-8 place-items-center rounded-[9px] text-white">
-            <IconPdf className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <p className="truncate font-medium">Schadenmeldung_Hausrat.pdf</p>
-            <p className="text-[11px] text-ink-2">inkl. 4 Fotos</p>
-          </div>
-        </div>
-        <div className="flex justify-end gap-2 pt-1">
-          <span className="rounded-[10px] bg-surface-2 px-3 py-2 text-[12px]">Bearbeiten</span>
-          <span className="rounded-[10px] bg-ink px-3.5 py-2 text-[12px] font-medium text-white">Freigeben</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MailZeile({ label, wert }: { label: string; wert: string }) {
-  return (
-    <div className="flex gap-2 border-b border-line pb-2">
-      <span className="w-12 shrink-0 text-ink-2">{label}</span>
-      <span className="truncate font-medium">{wert}</span>
     </div>
   );
 }

@@ -4,9 +4,9 @@ import { MobilMenue } from "./MobilMenue";
 import { Container, PrimaryButton } from "./ui/Basis";
 
 const links = [
-  { href: "/#loesungen", label: "Lösungen" },
-  { href: "/#ablauf", label: "Ablauf" },
-  { href: "/#rechner", label: "Rechner" },
+  { href: "/#projekte", label: "Projekte" },
+  { href: "/#ohne-umstellung", label: "Keine Umstellung" },
+  { href: "/#start", label: "So starten wir" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -28,7 +28,7 @@ export function Nav() {
     <header className="sticky top-0 z-40 border-b border-transparent bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
       <Container className="relative flex h-[68px] items-center justify-between gap-2 sm:gap-4">
         <Logo />
-        <nav aria-label="Hauptnavigation" className="hidden sm:block">
+        <nav aria-label="Hauptnavigation" className="hidden lg:block">
           <ul className="flex items-center gap-0.5 rounded-full bg-surface-2 p-1 lg:gap-1">
             {links.map((l) => (
               <li key={l.href}>
@@ -44,7 +44,7 @@ export function Nav() {
         </nav>
         <div className="flex items-center gap-2">
           <div className="hidden min-[400px]:block">
-            <PrimaryButton href="/#pilot">Erstgespräch</PrimaryButton>
+            <PrimaryButton href="/#pilot">Termin vereinbaren</PrimaryButton>
           </div>
           <MobilMenue links={links} />
         </div>

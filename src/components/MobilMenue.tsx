@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 type NavLink = { href: string; label: string };
 
-// Menü für schmale Bildschirme, ab 640 px übernimmt die Pill-Leiste
+// Menü für schmale Bildschirme, ab 1024 px übernimmt die Pill-Leiste
 export function MobilMenue({ links }: { links: NavLink[] }) {
   const [offen, setOffen] = useState(false);
   const id = useId();
@@ -24,7 +24,7 @@ export function MobilMenue({ links }: { links: NavLink[] }) {
   }, [offen]);
 
   return (
-    <div className="sm:hidden">
+    <div className="lg:hidden">
       <button
         ref={knopf}
         type="button"
@@ -62,7 +62,7 @@ export function MobilMenue({ links }: { links: NavLink[] }) {
                 onClick={() => setOffen(false)}
                 className="press flex min-h-[52px] items-center justify-center rounded-[12px] bg-ink text-[16px] font-medium text-white"
               >
-                Erstgespräch
+                Termin vereinbaren
               </Link>
             </li>
           </ul>

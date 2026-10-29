@@ -329,7 +329,7 @@ export function AbschlussAktionen({ onNeu }: { onNeu: () => void }) {
         href="/#pilot"
         className="press inline-flex min-h-[52px] items-center justify-between gap-3 rounded-[12px] bg-ink py-2 pl-5 pr-2 text-[16px] font-medium text-white"
       >
-        Erstgespräch vereinbaren
+        Termin vereinbaren
         <span className="grid size-9 place-items-center rounded-[9px] bg-white text-ink" aria-hidden="true">
           <IconPfeilRechts className="size-4" />
         </span>

@@ -8,26 +8,22 @@ export const site = {
   name,
   domain: "maklerai.de",
   url: "https://maklerai.de",
-  claim: "Digitalisierung für den Innendienst von Maklerbüros",
+  claim: "Weniger Backoffice, mehr Zeit bei Ihren Kunden",
   beschreibung:
-    "Wir richten Automationen für kleine Versicherungsmaklerbüros ein: Schadenmeldung per Link, WhatsApp für Service, Vertrieb und Newsletter sowie Kundenänderungen per Link.",
+    "Wir automatisieren den Innendienst von Versicherungsmaklern, ohne Umstellung. Weniger Backoffice, mehr Zeit bei Ihren Kunden.",
 
   person: {
     name: "Amadou Jalloh",
     vorname: "Amadou",
+    // Statt Foto ein Kreis mit Initialen
+    initialen: "AJ",
+    // Einziger Kontaktweg auf der Seite, bewusst ohne Telefon und WhatsApp
     email: "amadou@jalloh.net",
-    foto: "/amadou-jalloh.jpg",
     strasse: "Beethovenstr. 21",
     ort: "78054 Villingen-Schwenningen",
-    telefonAnzeige: "0176 45846156",
-    telefonLink: "tel:+4917645846156",
-    whatsappLink:
-      "https://wa.me/4917645846156?text=" +
-      encodeURIComponent("Hallo Herr Jalloh, ich interessiere mich für ein Erstgespräch zu " + name + "."),
+    // Google-Kalender-Buchungsseite von amadou@jalloh.net
+    terminLink: "https://calendar.app.google/RZeYpuCrCMQnmKzh8",
   },
-
-  // Google-Kalender-Buchungsseite von amadou@jalloh.net
-  bookingUrl: "https://calendar.app.google/RqoDCxYyffymsTUH9",
 
   platzhalter: {
     ustId: "[USt-IdNr. falls vorhanden]",

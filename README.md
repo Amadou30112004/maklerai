@@ -19,22 +19,26 @@ Weitere Befehle:
 
 - `npm run lint`: Code prüfen
 - `npm run build`: Produktions-Build
-- `npm test`: prüft die Ersparnisrechnung (Startwerte 3,0 Std., 105 €, 1.260 €)
+- `npm test`: prüft die Ersparnisrechnung (Startwerte 3,0 Std., 105 €, 1.260 €), die Schrittprüfung des Terminformulars (`pruefeSchritt`) und die Demo
 
 ## Platzhalter ausfüllen
 
 Alle offenen Angaben stehen zentral in `src/config/site.ts` unter `platzhalter`
 (USt-IdNr., Hosting-Anbieter, Stand der Datenschutzerklärung).
-Dort werden auch Markenname (`name`), Anschrift und Telefon gepflegt, sie stehen nirgends fest im Text.
+Dort werden auch Markenname (`name`), Anschrift, E-Mail und der Kalenderlink (`person.terminLink`) gepflegt, sie stehen nirgends fest im Text.
+Als Kontaktweg steht auf der Seite bewusst nur die E-Mail, keine Telefonnummer und kein WhatsApp.
 
 Weitere Platzhalter in eckigen Klammern stehen direkt in `src/app/datenschutz/page.tsx`
 (Speicherdauer, Auftragsverarbeitung mit Google, Aufsichtsbehörde, Drittlandhinweis).
 Impressum und Datenschutz vor dem Livegang rechtlich prüfen lassen.
 
-**Foto:** `public/amadou-jalloh.jpg` (quadratisch, 288 × 288 px). Zum Austauschen ein neues quadratisches Foto
-(mindestens 200 × 200 px) unter genau diesem Namen ablegen.
+**Personenzeile:** Statt Foto zeigt die Seite einen Kreis mit den Initialen aus `site.person.initialen`. Das alte Foto `public/amadou-jalloh.jpg` ist noch im Ordner, wird aber nicht mehr verwendet.
 
 ## Anfragen in Google Sheets
+
+Das Terminformular hat drei kurze Schritte (Name, Erreichbarkeit, freiwillige Angaben mit Einwilligung) und danach
+den Button zum Kalender. Ohne JavaScript erscheinen alle Felder untereinander, das Formular wird normal abgeschickt
+und leitet danach direkt in den Kalender weiter.
 
 Das Formular schickt an `POST /api/pilot`. Die Route prüft die Angaben und den Spam-Schutz
 (verstecktes Feld, Mindestzeit 4 Sekunden) und gibt die Anfrage an ein Google Sheet weiter.
@@ -56,8 +60,8 @@ So richten Sie das ein:
    im Blatt „Anfragen“, und an amadou@jalloh.net geht eine Mail.
 
 Ohne URL wird in der Entwicklung (`npm run dev`) jede Anfrage in `data/pilot-anfragen.json` gespeichert
-(Ordner ist in `.gitignore`). In der Produktion ohne URL oder bei einem Fehler sieht der Kunde eine
-Meldung mit E-Mail-Adresse und Telefonnummer. Ins Log werden nur Büroname und Zeitpunkt geschrieben.
+(Ordner ist in `.gitignore`). In der Produktion ohne URL oder bei einem Fehler sieht der Besucher eine
+Meldung mit E-Mail-Adresse, der Kalender-Button erscheint trotzdem. Ins Log werden nur Büroname und Zeitpunkt geschrieben.
 
 Ändern Sie später das Script, müssen Sie unter Bereitstellungen verwalten eine neue Version bereitstellen.
 
