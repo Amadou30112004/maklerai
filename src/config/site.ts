@@ -18,10 +18,10 @@ export const site = {
     // Statt Foto ein Kreis mit Initialen
     initialen: "AJ",
     // Einziger Kontaktweg auf der Seite, bewusst ohne Telefon und WhatsApp
-    email: "amadou@jalloh.net",
+    email: "maklerai@jalloh.net",
     strasse: "Beethovenstr. 21",
     ort: "78054 Villingen-Schwenningen",
-    // Google-Kalender-Buchungsseite von amadou@jalloh.net
+    // Google-Kalender-Buchungsseite (Konto jalloh.net)
     terminLink: "https://calendar.app.google/RZeYpuCrCMQnmKzh8",
   },
 

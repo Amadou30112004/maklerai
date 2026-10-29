@@ -43,8 +43,8 @@ type ButtonProps = {
 
 // Primärbutton: schwarz, weißer Text, rechts weiße Kachel mit Pfeil, beim Hover ein Orange-Glanz
 export function PrimaryButton({ href, children, className = "", size = "md", ...rest }: ButtonProps) {
-  const pad = size === "lg" ? "py-2 pl-5 pr-2 text-base min-h-[52px]" : "py-1.5 pl-4 pr-1.5 text-[15px] min-h-[44px]";
-  const kachel = size === "lg" ? "size-9" : "size-8";
+  const pad = size === "lg" ? "py-2 pl-5 pr-2 text-[17px] min-h-[56px]" : "py-1.5 pl-4 pr-1.5 text-[15px] min-h-[48px]";
+  const kachel = size === "lg" ? "size-10" : "size-9";
   const cls = `press glanz group inline-flex items-center gap-3 rounded-[12px] bg-ink font-medium text-white ${pad} ${className}`;
   const inhalt = (
     <>
@@ -71,15 +71,6 @@ export function PrimaryButton({ href, children, className = "", size = "md", ...
   );
 }
 
-// Der eine Handlungsaufruf der Seite, überall gleich
-export function TerminButton({ className = "", size = "md" }: { className?: string; size?: "md" | "lg" }) {
-  return (
-    <PrimaryButton href="#pilot" size={size} className={className}>
-      Termin vereinbaren
-    </PrimaryButton>
-  );
-}
-
 export function SectionHead({
   eyebrow,
   titel,
@@ -102,7 +93,7 @@ export function SectionHead({
         {titel}
       </h2>
       {text && (
-        <p className={`mt-4 text-[17px] leading-relaxed sm:text-lg ${dunkel ? "text-[#D9D6D0]" : "text-ink-2"}`}>{text}</p>
+        <p className={`mt-4 text-[17px] leading-[1.6] lg:text-[18px] ${dunkel ? "text-[#D9D6D0]" : "text-ink-2"}`}>{text}</p>
       )}
     </div>
   );

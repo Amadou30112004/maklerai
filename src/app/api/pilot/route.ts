@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { site } from "@/config/site";
-import { anfrageSchema, loesungNamen, MINDESTZEIT_MS, spamSchema } from "@/lib/schema";
+import { anfrageSchema, MINDESTZEIT_MS, spamSchema } from "@/lib/schema";
 
 const DATEI = path.join(process.cwd(), "data", "pilot-anfragen.json");
 const TIMEOUT_MS = 10_000;
@@ -36,9 +36,6 @@ async function lesen(request: Request): Promise<{ body: unknown; formular: boole
         buero: text("buero"),
         email: text("email"),
         telefon: text("telefon"),
-        zeitfresser: text("zeitfresser"),
-        interessen: f.getAll("interessen").map(String),
-        groesse: text("groesse"),
         einwilligung: f.get("einwilligung") === "on",
         website: text("website"),
         startedAt: Number.isFinite(startedAt) && startedAt > 0 ? startedAt : undefined,
@@ -94,10 +91,11 @@ export async function POST(request: Request) {
     buero: d.buero,
     email: d.email,
     telefon: d.telefon,
-    groesse: d.groesse || "nicht angegeben",
+    // Diese Fragen stellt das Formular nicht mehr, die Spalten bleiben leer
+    groesse: "",
     schwerpunkt: "",
-    interessen: d.interessen.map((id) => loesungNamen[id]),
-    zeitfresser: d.zeitfresser,
+    interessen: [],
+    zeitfresser: "",
   };
 
   try {

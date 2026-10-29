@@ -15,9 +15,10 @@ const kacheln = [
   { icon: IconKanaele, titel: "Verstreute Kanäle", text: "Mail, Telefon, WhatsApp, Post. Nichts liegt an einem Ort." },
 ];
 
+// Desktop 3 × 2 Karten, mobil eine schlichte Liste ohne Kartenrahmen
 export function Alltag() {
   return (
-    <section id="alltag" aria-labelledby="alltag-titel" className="bg-surface-2 py-16 sm:py-24">
+    <section id="alltag" aria-labelledby="alltag-titel" className="bg-surface-2 py-14 sm:py-16">
       <Container>
         <Reveal>
           <SectionHead
@@ -28,25 +29,30 @@ export function Alltag() {
           />
         </Reveal>
 
-        <ul data-stagger="" className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          data-stagger=""
+          className="mt-8 divide-y divide-line sm:mt-10 sm:grid sm:grid-cols-2 sm:gap-4 sm:divide-y-0 lg:grid-cols-3"
+        >
           {kacheln.map((k, i) => (
             <li key={k.titel} style={staffel(i)}>
-              <div className="alltag-kachel group h-full rounded-[20px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)]">
-                <span className="relative inline-grid">
-                  <span aria-hidden="true" className="alltag-schein pointer-events-none absolute -inset-3 rounded-full" />
-                  <span className="alltag-icon bg-grad relative grid size-11 place-items-center rounded-[13px] text-white shadow-[0_8px_20px_-8px_rgb(232_80_30/0.6)]">
-                    <k.icon className="size-[22px]" />
+              <div className="alltag-kachel group h-full py-5 sm:rounded-[20px] sm:bg-surface sm:p-5 sm:shadow-[var(--shadow-soft)] sm:transition-[transform,box-shadow] sm:duration-300 sm:ease-out motion-safe:sm:can-hover:-translate-y-1 sm:can-hover:shadow-[var(--shadow-float)]">
+                <div className="flex items-center gap-3.5">
+                  <span className="relative inline-grid shrink-0">
+                    <span aria-hidden="true" className="alltag-schein pointer-events-none absolute -inset-3 rounded-full" />
+                    <span className="alltag-icon bg-grad relative grid size-10 place-items-center rounded-[12px] text-white shadow-[0_8px_20px_-8px_rgb(232_80_30/0.6)]">
+                      <k.icon className="size-5" />
+                    </span>
                   </span>
-                </span>
-                <h3 className="mt-5 text-[19px]">{k.titel}</h3>
-                <p className="mt-2 text-[15.5px] leading-relaxed text-ink-2">{k.text}</p>
+                  <h3 className="text-[19px] leading-snug">{k.titel}</h3>
+                </div>
+                <p className="mt-2.5 text-[17px] leading-[1.6] text-ink-2 lg:text-[18px]">{k.text}</p>
               </div>
             </li>
           ))}
         </ul>
 
         <Reveal>
-          <p className="mx-auto mt-12 max-w-[640px] text-center text-[21px] font-medium leading-snug tracking-[-0.02em] sm:text-[24px]">
+          <p className="mx-auto mt-8 max-w-[640px] text-center text-[20px] font-medium leading-snug tracking-[-0.02em] sm:mt-10 sm:text-[24px]">
             Diese Zeit fehlt Ihnen beim Kunden. Genau die holen wir zurück.
           </p>
         </Reveal>

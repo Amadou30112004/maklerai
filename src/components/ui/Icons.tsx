@@ -249,3 +249,13 @@ export function IconPersoenlich(props: IconProps) {
     </Base>
   );
 }
+
+// KI-Assistent: Sprechblase mit Punkt
+export function IconChatbot(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4 5.5h16v11H10l-4.5 3.5v-3.5H4z" />
+      <circle cx="12" cy="11" r="1.6" fill="currentColor" stroke="none" />
+    </Base>
+  );
+}

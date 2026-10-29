@@ -2,7 +2,7 @@
 // dann Bereitstellen > Neue Bereitstellung > Web-App,
 // Ausführen als: Ich, Zugriff: Jeder. Die URL in GOOGLE_SHEETS_WEBHOOK_URL eintragen.
 const SECRET = 'HIER_DEN_GLEICHEN_SCHLUESSEL_WIE_IN_GOOGLE_SHEETS_SECRET';
-const EMPFAENGER = 'amadou@jalloh.net';
+const EMPFAENGER = 'maklerai@jalloh.net';
 const BLATT = 'Anfragen';
 
 function doPost(e) {

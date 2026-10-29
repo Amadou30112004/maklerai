@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { site } from "@/config/site";
 import { MobilMenue } from "./MobilMenue";
-import { Container, PrimaryButton } from "./ui/Basis";
+import { Container } from "./ui/Basis";
+import { TerminButton } from "./ui/TerminButton";
 
 const links = [
   { href: "/#projekte", label: "Projekte" },
-  { href: "/#ohne-umstellung", label: "Keine Umstellung" },
-  { href: "/#start", label: "So starten wir" },
+  { href: "/#ohne-umstellung", label: "Ohne Umstellung" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -44,7 +44,7 @@ export function Nav() {
         </nav>
         <div className="flex items-center gap-2">
           <div className="hidden min-[400px]:block">
-            <PrimaryButton href="/#pilot">Termin vereinbaren</PrimaryButton>
+            <TerminButton />
           </div>
           <MobilMenue links={links} />
         </div>

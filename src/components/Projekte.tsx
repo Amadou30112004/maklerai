@@ -1,64 +1,45 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { loesungen, type Loesung } from "./loesungen-daten";
-import { Container, IconKachel, SectionHead, TerminButton } from "./ui/Basis";
+import { eigenesProjekt, loesungen, type Loesung } from "./loesungen-daten";
+import { Container, SectionHead } from "./ui/Basis";
 import { IconHaken, IconPdf, IconPfeilRechts } from "./ui/Icons";
 import { Reveal, staffel } from "./ui/Reveal";
+import { TerminLink } from "./ui/TerminButton";
 import type { LoesungId } from "@/lib/schema";
 
-const vorschauen: Record<LoesungId, ReactNode | null> = {
+// Kleine Vorschau je Karte, nur ab Tablet sichtbar
+const vorschauen: Partial<Record<LoesungId, ReactNode>> = {
   schadenmeldung: <VorschauSchaden />,
   aenderungen: <VorschauAenderung />,
-  whatsapp: <VorschauWhatsApp />,
-  eigenes: null,
+  whatsapp: <VorschauChat />,
+  chatbot: <VorschauAssistent />,
 };
-
-// Raster: Desktop 3 Spalten, Tablet jede Karte volle Breite, mobil untereinander
-const spalten: Record<Loesung["format"], string> = {
-  gross: "md:col-span-2",
-  klein: "md:col-span-2 lg:col-span-1",
-  breit: "md:col-span-2 lg:col-span-3",
-};
-
-const kartenLayout: Record<Loesung["format"], string> = {
-  gross: "lg:grid lg:grid-cols-[1fr_1.05fr] lg:gap-8",
-  klein: "",
-  breit: "lg:grid lg:grid-cols-[0.8fr_1.6fr] lg:gap-10 lg:p-9",
-};
-
-// „Ihr eigenes Projekt“ ist eine kleine Karte ohne Vorschau. Neben ihr ist kein Platz frei,
-// darum steht sie als eigene, flache Zeile über die ganze Breite, damit das Raster aufgeht.
-const eigeneZeile = "md:col-span-2 lg:col-span-3";
 
 export function Projekte() {
   return (
-    <section id="projekte" aria-labelledby="projekte-titel" className="py-16 sm:py-24">
+    <section id="projekte" aria-labelledby="projekte-titel" className="py-14 sm:py-16">
       <Container>
         <Reveal>
           <SectionHead
             id="projekte-titel"
             eyebrow="Projekte"
             titel="Jedes Maklerhaus ist anders."
-            text="Deshalb schaue ich mir Ihr Büro gemeinsam mit Ihnen genau an und bespreche mit Ihnen die verschiedenen Möglichkeiten einer Zusammenarbeit. Diese Projekte setzen wir zum Beispiel um:"
+            text="Deshalb schauen wir uns Ihr Büro gemeinsam an und besprechen, welche Projekte für Sie passen."
             center
           />
         </Reveal>
 
-        <ul data-stagger="" className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {/* Desktop 2 × 2, mobil untereinander */}
+        <ul data-stagger="" className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
           {loesungen.map((l, i) => (
-            <li key={l.id} style={staffel(i)} className={`min-w-0 ${l.id === "eigenes" ? eigeneZeile : spalten[l.format]}`}>
+            <li key={l.id} style={staffel(i)} className="min-w-0">
               <Karte loesung={l} />
             </li>
           ))}
         </ul>
 
         <Reveal>
-          <div className="mt-14 flex flex-col items-center gap-5 text-center">
-            <p className="max-w-[560px] text-[18px] font-medium leading-snug tracking-[-0.01em] sm:text-[20px]">
-              Welche Möglichkeiten gibt es in Ihrem Büro? Vereinbaren Sie einen Termin, und wir prüfen es gemeinsam.
-            </p>
-            <TerminButton />
-          </div>
+          <EigeneLeiste />
         </Reveal>
       </Container>
     </section>
@@ -67,70 +48,78 @@ export function Projekte() {
 
 // Gemeinsame Hülle: Lichtfleck folgt der Maus (siehe LichtEffekt), Hover hebt leicht an
 const huelle =
-  "licht-karte group relative isolate h-full overflow-hidden rounded-[22px] bg-surface p-6 shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out sm:p-7 motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)]";
+  "licht-karte group relative isolate overflow-hidden rounded-[22px] bg-surface shadow-[var(--shadow-soft)] transition-[transform,box-shadow] duration-300 ease-out motion-safe:can-hover:-translate-y-1 can-hover:shadow-[var(--shadow-float)]";
+
+function KartenIcon({ loesung: l }: { loesung: Loesung }) {
+  return (
+    <span
+      className="bg-grad grid size-11 shrink-0 place-items-center rounded-[13px] text-white shadow-[0_8px_20px_-8px_rgb(232_80_30/0.6)] transition-transform duration-300 ease-out motion-safe:group-can-hover:-rotate-6"
+      aria-hidden="true"
+    >
+      <l.icon className="size-[22px]" />
+    </span>
+  );
+}
 
 function Karte({ loesung: l }: { loesung: Loesung }) {
-  if (l.id === "eigenes") return <EigeneKarte loesung={l} />;
-  const gross = l.format !== "klein";
+  const vorschau = vorschauen[l.id];
   return (
-    <article className={`${huelle} flex flex-col ${kartenLayout[l.format]}`}>
-      <div className="flex min-w-0 flex-col">
-        <IconKachel
-          icon={l.icon}
-          className="transition-transform duration-300 ease-out motion-safe:group-can-hover:-rotate-6"
-        />
-        <h3 className={`mt-6 ${gross ? "text-[26px] sm:text-[30px]" : "text-[21px]"} leading-tight`}>{l.titel}</h3>
-        <p className="mt-3 text-[15.5px] leading-relaxed text-ink-2">{l.text}</p>
-        <ul className="mt-5 space-y-2.5">
-          {l.punkte.map((p) => (
-            <li key={p} className="flex items-start gap-2.5 text-[15px]">
-              <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-[#FFE6DB] text-orange-3">
-                <IconHaken className="size-3" strokeWidth={2.4} />
-              </span>
-              {p}
-            </li>
-          ))}
-        </ul>
-        {l.id === "schadenmeldung" && (
-          <Link
-            href="/demo/schadenmeldung"
-            className="group/demo mt-5 inline-flex min-h-[44px] items-center gap-2 self-start text-[15.5px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent"
-          >
-            Beispiel durchklicken
-            <IconPfeilRechts className="size-4" />
-          </Link>
-        )}
+    <article className={`${huelle} flex h-full flex-col p-6 sm:p-7`}>
+      <div className="flex items-center gap-3.5">
+        <KartenIcon loesung={l} />
+        <h3 className="text-[21px] leading-tight sm:text-[23px]">{l.titel}</h3>
       </div>
-      <div
-        aria-hidden="true"
-        className={`bg-grad-soft mt-7 flex min-w-0 flex-1 items-end justify-center rounded-[16px] p-4 sm:p-5 ${
-          gross ? "lg:mt-0 lg:items-center" : ""
-        }`}
-      >
-        {vorschauen[l.id]}
-      </div>
+      <p className="mt-4 text-[17px] leading-[1.6] text-ink-2 lg:text-[18px]">{l.text}</p>
+      <ul className="mt-4 space-y-2">
+        {l.punkte.map((p) => (
+          <li key={p} className="flex items-start gap-2.5 text-[16px] leading-snug">
+            <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-[#FFE6DB] text-orange-3">
+              <IconHaken className="size-3" strokeWidth={2.4} />
+            </span>
+            {p}
+          </li>
+        ))}
+      </ul>
+      {l.id === "schadenmeldung" && (
+        <Link
+          href="/demo/schadenmeldung"
+          className="mt-4 inline-flex min-h-[48px] items-center gap-2 self-start text-[16px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent"
+        >
+          Beispiel durchklicken
+          <IconPfeilRechts className="size-4" />
+        </Link>
+      )}
+      {vorschau && <div className="hidden h-5 md:block" aria-hidden="true" />}
+      {vorschau && (
+        <div
+          aria-hidden="true"
+          className={`bg-grad-soft mt-auto hidden h-[210px] min-w-0 justify-center overflow-hidden rounded-[16px] px-3.5 md:flex ${
+            // Beim Assistenten zählt das Ende des Gesprächs (Rückruf), darum von unten zeigen
+            l.id === "chatbot" ? "vorschau-von-unten items-end pb-3.5" : "vorschau-ausschnitt items-start pt-3.5"
+          }`}
+        >
+          {vorschau}
+        </div>
+      )}
     </article>
   );
 }
 
-function EigeneKarte({ loesung: l }: { loesung: Loesung }) {
+function EigeneLeiste() {
+  const l = eigenesProjekt;
   return (
-    <article className={`${huelle} flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8`}>
-      <IconKachel
-        icon={l.icon}
-        className="transition-transform duration-300 ease-out motion-safe:group-can-hover:-rotate-6"
-      />
-      <div className="min-w-0 flex-1">
-        <h3 className="text-[21px] leading-tight">{l.titel}</h3>
-        <p className="mt-2 max-w-[640px] text-[15.5px] leading-relaxed text-ink-2">{l.text}</p>
+    <article className={`${huelle} mt-4 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-6 sm:px-7 md:mt-5`}>
+      <div className="flex min-w-0 flex-1 items-start gap-3.5 sm:items-center">
+        <KartenIcon loesung={l} />
+        <div className="min-w-0">
+          <h3 className="text-[19px] leading-tight">{l.titel}</h3>
+          <p className="mt-1 text-[17px] leading-[1.6] text-ink-2">{l.text}</p>
+        </div>
       </div>
-      <a
-        href="#pilot"
-        className="inline-flex min-h-[44px] shrink-0 items-center gap-2 self-start text-[15.5px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent sm:self-center"
-      >
+      <TerminLink className="inline-flex min-h-[48px] shrink-0 items-center gap-2 self-start text-[16px] font-medium underline decoration-line decoration-2 underline-offset-[6px] can-hover:decoration-accent sm:self-center">
         Termin vereinbaren
         <IconPfeilRechts className="size-4" />
-      </a>
+      </TerminLink>
     </article>
   );
 }
@@ -139,7 +128,7 @@ function Mini({ children, className = "", anim = false }: { children: ReactNode;
   return (
     <div
       data-anim={anim ? "" : undefined}
-      className={`w-full rounded-[14px] bg-surface p-3.5 text-[12.5px] shadow-[var(--shadow-float)] ${anim ? "seq" : ""} ${className}`}
+      className={`w-full rounded-[14px] bg-surface p-3 text-[12px] shadow-[var(--shadow-float)] ${anim ? "seq" : ""} ${className}`}
     >
       {children}
     </div>
@@ -183,7 +172,7 @@ function VorschauSchaden() {
 // Beispieldaten erfunden, nur zur Veranschaulichung
 function VorschauChat() {
   return (
-    <Mini className="h-full" anim>
+    <Mini className="max-w-[400px]" anim>
       <div className="flex items-center gap-2.5 border-b border-line pb-2.5">
         <span className="bg-grad grid size-8 shrink-0 place-items-center rounded-full text-[13px] font-medium text-white">
           W
@@ -193,7 +182,7 @@ function VorschauChat() {
       </div>
       <div
         style={verzoegerung(0)}
-        className="seq-teil mt-3 max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-3 py-2 leading-snug"
+        className="seq-teil mt-3 max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-2.5 py-1.5 leading-snug"
       >
         Hallo, mir ist heute einer reingefahren. Was soll ich jetzt machen und wie melde ich den Schaden?
         <span className="mt-1 block text-right text-[10.5px] text-ink-2">14:32</span>
@@ -226,78 +215,6 @@ function VorschauChat() {
   );
 }
 
-// Beispieldaten erfunden, nur zur Veranschaulichung
-function VorschauNewsletter() {
-  return (
-    <Mini className="h-full" anim>
-      <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
-        <span className="font-medium">Newsletter per WhatsApp</span>
-        <span
-          style={verzoegerung(1500)}
-          className="seq-teil seq-pop rounded-full bg-[#FFE6DB] px-2 py-0.5 text-[10.5px] font-medium text-[#B23A12]"
-        >
-          geplant
-        </span>
-      </div>
-      {/* Aufbau wie eine WhatsApp-Vorlage: Titelbild, Überschrift, Themen, Fußzeile, Antwort-Buttons */}
-      <div className="mt-3 overflow-hidden rounded-[12px] rounded-tl-[4px] bg-bg leading-snug">
-        <div className="bg-grad relative flex h-[74px] items-end p-2.5 text-white">
-          <svg viewBox="0 0 48 32" className="absolute right-3 top-2.5 h-9 w-auto opacity-90" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M14 20a7 7 0 1 1 2-13.7A9 9 0 0 1 33 9a6 6 0 1 1 1 11z" />
-            <path d="m18 24-2 4M26 24l-2 4M34 24l-2 4" />
-          </svg>
-          <span className="text-[10.5px] font-medium uppercase tracking-[0.1em]">Büro-Post Herbst</span>
-        </div>
-        <div className="px-3 pb-2.5 pt-2.5">
-          <p className="text-[13px] font-semibold">Ihr Herbst-Check in drei Punkten</p>
-          <p className="mt-1.5">Guten Morgen, Frau Becker. Das ist diesen Herbst wichtig:</p>
-          <ul className="mt-1.5 space-y-1">
-            {[
-              ["Starkregen", "Ist Ihr Haus gegen Elementarschäden abgesichert?"],
-              ["Winterreifen", "Beim Wechsel prüfen wir gern Ihren Kfz-Vertrag mit."],
-              ["Neu bei uns", "Schäden melden Sie jetzt einfach per Link."],
-            ].map(([titel, text]) => (
-              <li key={titel} className="flex gap-1.5">
-                <span className="mt-[5px] size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-                <span>
-                  <span className="font-semibold">{titel}:</span> {text}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-2 text-[10.5px] text-ink-2">Ihr Maklerbüro · Abmelden mit STOP</p>
-        </div>
-        <div className="grid border-t border-line text-center font-medium text-[#B23A12]">
-          <span className="py-1.5">Termin vereinbaren</span>
-          <span className="border-t border-line py-1.5">Rückruf anfragen</span>
-        </div>
-      </div>
-      <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-[11.5px] text-ink-2">
-        <dt>Empfänger:</dt>
-        <dd>alle Privatkunden mit Einwilligung</dd>
-        <dt>Versand:</dt>
-        <dd>Dienstag, 9:00 Uhr</dd>
-      </dl>
-    </Mini>
-  );
-}
-
-function VorschauWhatsApp() {
-  return (
-    <div className="grid w-full gap-5 sm:grid-cols-2">
-      {[
-        { label: "Service", inhalt: <VorschauChat /> },
-        { label: "Vertrieb", inhalt: <VorschauNewsletter /> },
-      ].map((v) => (
-        <div key={v.label} className="flex min-w-0 flex-col">
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-ink">{v.label}</p>
-          <div className="flex-1">{v.inhalt}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function VorschauAenderung() {
   return (
     <Mini className="max-w-[340px]">
@@ -320,3 +237,35 @@ function VorschauAenderung() {
   );
 }
 
+
+// Statische Vorschau, kein echter Chatbot. Beispieldaten erfunden, nur zur Veranschaulichung.
+// Regel: Der Assistent berät nicht, empfiehlt keine Tarife, sagt nichts zur Deckung und gibt sich als KI zu erkennen.
+function VorschauAssistent() {
+  return (
+    <Mini className="max-w-[400px]">
+      <div className="border-b border-line pb-2.5">
+        <p className="font-medium">Assistent · Muster Versicherungsmakler</p>
+        <p className="text-[11px] text-ink-2">KI-Assistent, keine Beratung</p>
+      </div>
+      <div className="mt-2.5 space-y-1.5 leading-snug">
+        <p className="ml-auto max-w-[80%] rounded-[12px] rounded-br-[4px] bg-ink px-2.5 py-1.5 text-white">
+          Ich ziehe um. Was muss ich tun?
+        </p>
+        <p className="max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-2.5 py-1.5">
+          Danke für Ihre Nachricht. Ihre neue Adresse können Sie uns direkt hier melden: [Link]. Wir geben sie an Ihre
+          Versicherer weiter.
+        </p>
+        <p className="ml-auto max-w-[80%] rounded-[12px] rounded-br-[4px] bg-ink px-2.5 py-1.5 text-white">
+          Brauche ich in der neuen Wohnung eine höhere Hausrat?
+        </p>
+        <div className="max-w-[88%] rounded-[12px] rounded-bl-[4px] bg-bg px-2.5 py-1.5">
+          Das klären wir am besten persönlich. Soll Sie Ihr Berater zurückrufen?
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <span className="rounded-[9px] bg-ink px-2.5 py-1 font-medium text-white">Rückruf anfragen</span>
+            <span className="rounded-[9px] border border-line bg-surface px-2.5 py-1 font-medium">Nein, danke</span>
+          </div>
+        </div>
+      </div>
+    </Mini>
+  );
+}

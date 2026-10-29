@@ -6,9 +6,7 @@ import { LichtEffekt } from "@/components/LichtEffekt";
 import { Nav } from "@/components/Nav";
 import { OhneUmstellung } from "@/components/OhneUmstellung";
 import { Projekte } from "@/components/Projekte";
-import { Rechner } from "@/components/Rechner";
 import { ScrollEffekte } from "@/components/ScrollEffekte";
-import { Start } from "@/components/Start";
 import { Termin } from "@/components/Termin";
 
 export default function Home() {
@@ -18,12 +16,10 @@ export default function Home() {
       <main>
         <Hero />
         <Alltag />
-        <OhneUmstellung />
         <Projekte />
-        <Start />
-        <Rechner />
-        <Faq />
         <Termin />
+        <OhneUmstellung />
+        <Faq />
       </main>
       <Footer />
       <ScrollEffekte />

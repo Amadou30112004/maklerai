@@ -19,7 +19,7 @@ Weitere Befehle:
 
 - `npm run lint`: Code prüfen
 - `npm run build`: Produktions-Build
-- `npm test`: prüft die Ersparnisrechnung (Startwerte 3,0 Std., 105 €, 1.260 €), die Schrittprüfung des Terminformulars (`pruefeSchritt`) und die Demo
+- `npm test`: prüft die Ersparnisrechnung (`src/lib/ersparnis.ts`, derzeit nicht auf der Seite eingebunden), die Schrittprüfung des Terminformulars (`pruefeSchritt`) und die Demo
 
 ## Platzhalter ausfüllen
 
@@ -34,10 +34,16 @@ Impressum und Datenschutz vor dem Livegang rechtlich prüfen lassen.
 
 **Personenzeile:** Statt Foto zeigt die Seite einen Kreis mit den Initialen aus `site.person.initialen`. Das alte Foto `public/amadou-jalloh.jpg` ist noch im Ordner, wird aber nicht mehr verwendet.
 
+## E-Mail-Adresse maklerai@jalloh.net
+
+Auf der Seite steht als Kontakt nur `maklerai@jalloh.net` (`site.person.email`). Die Adresse ist ein Alias im
+Google-Workspace-Konto von jalloh.net, Mails landen also im selben Postfach. Damit Sie auch von dieser Adresse
+antworten können, fügen Sie sie in Gmail unter Einstellungen, Konten, „Senden als“ hinzu.
+
 ## Anfragen in Google Sheets
 
-Das Terminformular hat drei kurze Schritte (Name, Erreichbarkeit, freiwillige Angaben mit Einwilligung) und danach
-den Button zum Kalender. Ohne JavaScript erscheinen alle Felder untereinander, das Formular wird normal abgeschickt
+Das Terminformular hat zwei kurze Schritte (Name, dann Erreichbarkeit mit Einwilligung) und danach
+den Button zum Kalender. Bürogröße, Interessen und Zeitfresser fragt es nicht mehr ab, diese Spalten im Sheet bleiben leer. Ohne JavaScript erscheinen alle Felder untereinander, das Formular wird normal abgeschickt
 und leitet danach direkt in den Kalender weiter.
 
 Das Formular schickt an `POST /api/pilot`. Die Route prüft die Angaben und den Spam-Schutz
@@ -57,7 +63,7 @@ So richten Sie das ein:
 5. **Eintragen:** `.env.example` nach `.env.local` kopieren, dort `GOOGLE_SHEETS_WEBHOOK_URL` (die URL)
    und `GOOGLE_SHEETS_SECRET` (derselbe Schlüssel wie im Script) eintragen. Server neu starten.
 6. **Einmal testen:** Das Formular auf der Seite absenden. In der Tabelle erscheint eine neue Zeile
-   im Blatt „Anfragen“, und an amadou@jalloh.net geht eine Mail.
+   im Blatt „Anfragen“, und an maklerai@jalloh.net geht eine Mail.
 
 Ohne URL wird in der Entwicklung (`npm run dev`) jede Anfrage in `data/pilot-anfragen.json` gespeichert
 (Ordner ist in `.gitignore`). In der Produktion ohne URL oder bei einem Fehler sieht der Besucher eine

@@ -11,8 +11,7 @@ import {
   type Ref,
 } from "react";
 import { site } from "@/config/site";
-import { bueroGroessen, pruefeSchritt, type LoesungId, type Schritt } from "@/lib/schema";
-import { loesungen } from "./loesungen-daten";
+import { pruefeSchritt, type Schritt } from "@/lib/schema";
 import { IconHaken, IconPfeilRechts } from "./ui/Icons";
 
 type Daten = {
@@ -21,9 +20,6 @@ type Daten = {
   buero: string;
   email: string;
   telefon: string;
-  zeitfresser: string;
-  interessen: LoesungId[];
-  groesse: string;
   einwilligung: boolean;
   website: string; // Honeypot
 };
@@ -36,9 +32,6 @@ const leer: Daten = {
   buero: "",
   email: "",
   telefon: "",
-  zeitfresser: "",
-  interessen: [],
-  groesse: "",
   einwilligung: false,
   website: "",
 };
@@ -46,14 +39,12 @@ const leer: Daten = {
 const titel: Record<Schritt, string> = {
   1: "Buchen Sie Ihren Termin",
   2: "Wie erreichen wir Sie?",
-  3: "Worum soll es gehen?",
 };
 
 // Reihenfolge der Felder je Schritt, damit das erste fehlerhafte Feld den Fokus bekommt
 const felder: Record<Schritt, (keyof Daten)[]> = {
   1: ["vorname", "nachname"],
-  2: ["buero", "email", "telefon"],
-  3: ["zeitfresser", "interessen", "groesse", "einwilligung"],
+  2: ["buero", "email", "telefon", "einwilligung"],
 };
 
 // Alter Inhalt gleitet raus, neuer kommt rein: zusammen knapp 300 ms
@@ -122,12 +113,6 @@ export function AnfrageFormular() {
     setFehler((f) => ({ ...f, [key]: r.ok ? undefined : r.fehler[key] }));
   };
 
-  const toggleInteresse = (id: LoesungId) =>
-    set(
-      "interessen",
-      daten.interessen.includes(id) ? daten.interessen.filter((x) => x !== id) : [...daten.interessen, id],
-    );
-
   const wechsel = (ziel: Schritt | "fertig", r: "vor" | "zurueck") => {
     clearTimeout(timer.current);
     if (wenigBewegung()) {
@@ -178,14 +163,14 @@ export function AnfrageFormular() {
       return;
     }
     setFehler({});
-    if (schritt === 3) void absenden();
-    else wechsel((schritt + 1) as Schritt, "vor");
+    if (schritt === 2) void absenden();
+    else wechsel(2, "vor");
   };
 
   const zurueck = () => {
-    if (schritt === "fertig" || schritt === 1) return;
+    if (schritt !== 2) return;
     setFehler({});
-    wechsel((schritt - 1) as Schritt, "zurueck");
+    wechsel(1, "zurueck");
   };
 
   const animKlasse =
@@ -197,7 +182,7 @@ export function AnfrageFormular() {
         ? "schritt-rein-vor"
         : "schritt-rein-zurueck";
 
-  // Ohne JavaScript: alle Schritte sichtbar
+  // Ohne JavaScript: beide Schritte sichtbar
   const sichtbar = (s: Schritt) => !mitJs || schritt === s;
 
   return (
@@ -299,84 +284,14 @@ export function AnfrageFormular() {
                       type="tel"
                       inputMode="tel"
                       autoComplete="tel"
-                      enterKeyHint="next"
+                      enterKeyHint="send"
                       value={daten.telefon}
                       onChange={(v) => set("telefon", v)}
                       onBlur={() => pruefeFeld("telefon")}
                       fehler={fehler.telefon}
                     />
-                  </div>
-                  {mitJs && (
-                    <Knoepfe>
-                      <Zurueck onClick={zurueck} />
-                      <Senden>Weiter</Senden>
-                    </Knoepfe>
-                  )}
-                </Abschnitt>
-              )}
-
-              {sichtbar(3) && (
-                <Abschnitt titel={titel[3]} kopfRef={mitJs ? kopfRef : undefined} abstand={!mitJs}>
-                  <p className="-mt-3 mb-6 text-[13.5px] text-ink-2">Alles freiwillig, Sie können auch direkt weiter.</p>
-                  <div className="space-y-7">
                     <div>
-                      <label htmlFor="feld-zeitfresser" className="text-[15px] font-medium">
-                        Was kostet Ihren Innendienst am meisten Zeit?
-                      </label>
-                      <textarea
-                        id="feld-zeitfresser"
-                        name="zeitfresser"
-                        rows={3}
-                        value={daten.zeitfresser}
-                        onChange={(e) => set("zeitfresser", e.target.value)}
-                        onBlur={() => pruefeFeld("zeitfresser")}
-                        className="feld mt-2 resize-y"
-                        aria-invalid={!!fehler.zeitfresser}
-                        aria-describedby={fehler.zeitfresser ? "zeitfresser-fehler" : undefined}
-                      />
-                      <FeldFehler id="zeitfresser-fehler" text={fehler.zeitfresser} />
-                    </div>
-
-                    <Gruppe legend="Was interessiert Sie?" hinweis="Mehrfachauswahl möglich" id="interessen">
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {loesungen.map((l, i) => (
-                          <Kachel
-                            key={l.id}
-                            id={i === 0 ? "feld-interessen" : undefined}
-                            name="interessen"
-                            value={l.id}
-                            type="checkbox"
-                            checked={daten.interessen.includes(l.id)}
-                            onChange={() => toggleInteresse(l.id)}
-                            icon={<l.icon className="size-[18px]" />}
-                          >
-                            {l.kurz}
-                          </Kachel>
-                        ))}
-                      </div>
-                    </Gruppe>
-
-                    <Gruppe legend="Wie groß ist Ihr Büro?" id="groesse">
-                      <div className="grid grid-cols-3 gap-2">
-                        {bueroGroessen.map((g, i) => (
-                          <Kachel
-                            key={g}
-                            id={i === 0 ? "feld-groesse" : undefined}
-                            name="groesse"
-                            value={g}
-                            type="radio"
-                            mittig
-                            checked={daten.groesse === g}
-                            onChange={() => set("groesse", g)}
-                          >
-                            {g}
-                          </Kachel>
-                        ))}
-                      </div>
-                    </Gruppe>
-
-                    <div>
-                      <label className="flex cursor-pointer items-start gap-3 text-[14.5px] leading-relaxed">
+                      <label className="flex min-h-[48px] cursor-pointer items-start gap-3 text-[15px] leading-[1.6]">
                         <input
                           id="feld-einwilligung"
                           type="checkbox"
@@ -417,13 +332,13 @@ export function AnfrageFormular() {
 function Fortschritt({ schritt }: { schritt: Schritt }) {
   return (
     <div className="mb-6">
-      <p className="text-[13px] font-medium text-ink-2" aria-live="polite">
-        Schritt {schritt} von 3
+      <p className="text-[14px] font-medium text-ink-2" aria-live="polite">
+        Schritt {schritt} von 2
       </p>
       <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
         <span
           className="fortschritt bg-grad block h-full w-full origin-left rounded-full"
-          style={{ transform: `scaleX(${schritt / 3})` }}
+          style={{ transform: `scaleX(${schritt / 2})` }}
         />
       </div>
     </div>
@@ -474,12 +389,12 @@ function Abschluss({
       {sendeFehler && (
         <p
           role="alert"
-          className="mx-auto mt-4 max-w-[420px] rounded-[12px] bg-[#FFE6DB] px-4 py-3 text-[14.5px] text-[#8A2A0A]"
+          className="mx-auto mt-4 max-w-[420px] rounded-[12px] bg-[#FFE6DB] px-4 py-3 text-[15px] text-[#8A2A0A]"
         >
           {sendeFehler}
         </p>
       )}
-      <p className="mx-auto mt-4 max-w-[420px] text-[16px] leading-relaxed text-ink-2">
+      <p className="mx-auto mt-4 max-w-[420px] text-[17px] leading-[1.6] text-ink-2">
         Wählen Sie jetzt einen freien Termin in meinem Kalender. Im Termin klären wir gemeinsam, welche Möglichkeiten es
         für Ihr Büro gibt.
       </p>
@@ -495,7 +410,7 @@ function Abschluss({
         </span>
         <span className="sr-only"> (öffnet in neuem Tab)</span>
       </a>
-      <p className="mt-5 text-[14px] text-ink-2">
+      <p className="mt-5 text-[15px] text-ink-2">
         Kein passender Termin dabei? Schreiben Sie mir:{" "}
         <a href={`mailto:${site.person.email}`} className="text-ink underline underline-offset-4">
           {site.person.email}
@@ -536,86 +451,6 @@ function Senden({ children, disabled }: { children: ReactNode; disabled?: boolea
   );
 }
 
-function Gruppe({
-  legend,
-  hinweis,
-  id,
-  children,
-}: {
-  legend: string;
-  hinweis?: string;
-  id: string;
-  children: ReactNode;
-}) {
-  return (
-    <fieldset id={`${id}-gruppe`}>
-      <legend className="text-[15px] font-medium">
-        {legend} {hinweis && <span className="font-normal text-ink-2">({hinweis})</span>}
-      </legend>
-      <div className="mt-2.5">{children}</div>
-    </fieldset>
-  );
-}
-
-function Kachel({
-  id,
-  name,
-  value,
-  type,
-  checked,
-  onChange,
-  icon,
-  mittig = false,
-  children,
-}: {
-  id?: string;
-  name: string;
-  value: string;
-  type: "radio" | "checkbox";
-  checked: boolean;
-  onChange: () => void;
-  icon?: ReactNode;
-  mittig?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <label
-      className={`press relative flex min-h-[52px] cursor-pointer items-center gap-2.5 rounded-[14px] border px-3.5 py-2.5 text-[14.5px] leading-snug transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink ${
-        mittig ? "justify-center px-2 text-center" : ""
-      } ${checked ? "border-ink bg-ink text-white" : "border-line bg-surface can-hover:border-ink/40"}`}
-    >
-      <input
-        id={id}
-        type={type}
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        className="sr-only"
-      />
-      {icon && (
-        <span
-          className={`grid size-8 shrink-0 place-items-center rounded-[10px] ${
-            checked ? "bg-white/15 text-white" : "bg-grad text-white"
-          }`}
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
-      )}
-      <span className={mittig ? "" : "flex-1"}>{children}</span>
-      {type === "checkbox" && (
-        <span
-          className={`grid size-5 shrink-0 place-items-center rounded-full ${checked ? "bg-white text-ink" : "border border-line"}`}
-          aria-hidden="true"
-        >
-          {checked && <IconHaken className="size-3" strokeWidth={2.6} />}
-        </span>
-      )}
-    </label>
-  );
-}
-
 function Feld({
   id,
   label,
@@ -644,7 +479,7 @@ function Feld({
   const feldId = `feld-${id}`;
   return (
     <div className="min-w-0">
-      <label htmlFor={feldId} className="text-[15px] font-medium">
+      <label htmlFor={feldId} className="text-[16px] font-medium">
         {label} {optional && <span className="font-normal text-ink-2">(optional)</span>}
       </label>
       <input
@@ -670,7 +505,7 @@ function Feld({
 function FeldFehler({ id, text }: { id: string; text?: string }) {
   if (!text) return null;
   return (
-    <p id={id} className="mt-1.5 text-[14px] font-medium text-[#B23A12]">
+    <p id={id} className="mt-1.5 text-[15px] font-medium text-[#B23A12]">
       {text}
     </p>
   );

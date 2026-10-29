@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { Container, Eyebrow, Leuchten, TerminButton } from "./ui/Basis";
+import { Container, Eyebrow, Leuchten } from "./ui/Basis";
+import { TerminButton } from "./ui/TerminButton";
 import { IconHaken, IconPersonStift, IconPfeilRechts, IconDokumentBlitz, IconSprechblaseFunken } from "./ui/Icons";
 
 export function Hero() {
   return (
-    <section aria-labelledby="hero-titel" className="relative overflow-x-clip pb-16 pt-10 sm:pb-24 sm:pt-16">
+    <section aria-labelledby="hero-titel" className="relative overflow-x-clip pb-14 pt-8 sm:pb-20 sm:pt-14">
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
           <div className="relative z-10">
@@ -50,18 +51,18 @@ export function Hero() {
                 </svg>
               </span>
             </h1>
-            <p className="mt-7 max-w-[560px] text-[17px] leading-relaxed text-ink-2 sm:text-lg">
+            <p className="mt-7 max-w-[560px] text-[17px] leading-[1.6] text-ink-2 lg:text-[18px]">
               Wir automatisieren die Routinearbeit in Ihrem Innendienst. Sie arbeiten weiter mit VEMA, Ihrem Pool und
               Ihren gewohnten Programmen. Ohne Umstellung.
             </p>
             <div className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-start">
               <div className="flex flex-col items-start gap-2.5">
                 <TerminButton size="lg" />
-                <p className="whitespace-nowrap text-[13px] text-ink-2">Kostenlos · 30 Minuten · Ohne Verpflichtung</p>
+                <p className="whitespace-nowrap text-[14px] text-ink-2">Kostenlos · 30 Minuten · Ohne Verpflichtung</p>
               </div>
               <Link
                 href="/demo/schadenmeldung"
-                className="press inline-flex min-h-[52px] items-center gap-2 rounded-[12px] border border-line bg-surface px-5 text-[15px] font-medium can-hover:border-ink/30 sm:whitespace-nowrap"
+                className="press inline-flex min-h-[56px] items-center gap-2 rounded-[12px] border border-line bg-surface px-5 text-[15px] font-medium can-hover:border-ink/30 sm:whitespace-nowrap"
               >
                 Beispiel ansehen: Schadenmeldung
                 <IconPfeilRechts className="size-4" />
@@ -83,7 +84,7 @@ export function Hero() {
                       zeile="an alle Versicherer, wartet auf Freigabe"
                     />
                   ),
-                  versatz: "lg:mr-16",
+                  versatz: "hidden md:block lg:mr-16",
                   ankunft: "100ms",
                   schweben: "0s",
                   dauer: "7s",
@@ -113,7 +114,7 @@ export function Hero() {
                       knopf
                     />
                   ),
-                  versatz: "lg:mr-8",
+                  versatz: "hidden md:block lg:mr-8",
                   ankunft: "340ms",
                   schweben: "-4.6s",
                   dauer: "6.5s",
@@ -160,7 +161,7 @@ function Vorgang({
               {pill}
             </span>
           </div>
-          <p className="mt-1 text-[13px] leading-snug text-ink-2">{zeile}</p>
+          <p className="mt-1 text-[14px] leading-snug text-ink-2">{zeile}</p>
           {knopf && (
             <div className="mt-3 flex justify-end gap-2 text-[12px]">
               <span className="rounded-[9px] bg-surface-2 px-3 py-1.5">Bearbeiten</span>

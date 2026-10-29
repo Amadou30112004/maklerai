@@ -22,7 +22,7 @@
   --surface: #ffffff;
   --surface-2: #ece9e3;
   --ink: #121212;
-  --ink-2: #4a4a4a;
+  --ink-2: #3a3a3a;
   --line: #e2ded6;
   --accent: #ff5f3a;
   --orange-1: #ffb36b;
@@ -82,7 +82,7 @@ p {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--orange-3);
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -206,13 +206,6 @@ section[id] {
     opacity: 1;
     transform: scale(1);
   }
-}
-
-/* Rechner: Ergebnis als Orange-Karte */
-.rechner-ergebnis {
-  background:
-    radial-gradient(90% 70% at 100% 100%, rgb(255 255 255 / 0.22) 0%, transparent 60%),
-    linear-gradient(315deg, var(--orange-1) 0%, var(--orange-2) 70%);
 }
 
 .press {
@@ -370,23 +363,6 @@ details > summary::-webkit-details-marker {
     stroke-dashoffset: 1;
   }
 
-  /* Ablauf: Verbindungslinie füllt sich (mobil von oben, ab md von links) */
-  .ablauf-fuellung {
-    transform-origin: top;
-    transition: transform 300ms ease-out;
-    transition-delay: calc(var(--i, 0) * 300ms + 200ms);
-  }
-  .anim-bereit .ablauf:not(.is-visible) .ablauf-fuellung {
-    transform: scaleY(0);
-  }
-  @media (min-width: 768px) {
-    .ablauf-fuellung {
-      transform-origin: left;
-    }
-    .anim-bereit .ablauf:not(.is-visible) .ablauf-fuellung {
-      transform: scaleX(0);
-    }
-  }
 
   /* FAQ: Antwort klappt weich auf, wo der Browser es kann */
   @supports selector(::details-content) {
@@ -549,7 +525,8 @@ details > summary::-webkit-details-marker {
 }
 .feld:focus {
   outline: none;
-  border-color: var(--ink);
+  border-color: var(--orange-3);
+  box-shadow: 0 0 0 1px var(--orange-3);
   background: var(--surface);
 }
 .feld[aria-invalid="true"] {
@@ -691,52 +668,13 @@ label,
   }
 }
 
-/* Regler im Rechner: gefüllter Orange-Anteil über --p */
-.regler {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
+
+/* Projekt-Vorschauen: fester Ausschnitt, unten weich ausgeblendet */
+.vorschau-ausschnitt {
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
 }
-.regler::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--orange-1), var(--orange-2) var(--p), var(--surface-2) var(--p));
-}
-.regler::-moz-range-track {
-  height: 6px;
-  border-radius: 999px;
-  background: var(--surface-2);
-}
-.regler::-moz-range-progress {
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--orange-1), var(--orange-2));
-}
-.regler::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  margin-top: -11px;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background: var(--grad);
-  border: 3px solid var(--surface);
-  box-shadow: 0 4px 14px -4px rgb(232 80 30 / 0.6);
-}
-.regler::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: var(--grad);
-  border: 3px solid var(--surface);
-}
-.regler:focus-visible {
-  outline: none;
-}
-.regler:focus-visible::-webkit-slider-thumb {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
-}
-.regler:focus-visible::-moz-range-thumb {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
+.vorschau-von-unten {
+  -webkit-mask-image: linear-gradient(to top, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 78%, transparent 100%);
 }

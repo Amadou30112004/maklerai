@@ -1,18 +1,8 @@
 import { z } from "zod";
 
-export const bueroGroessen = ["1 Person", "2 bis 5", "mehr als 5"] as const;
-
-export const loesungIds = ["schadenmeldung", "aenderungen", "whatsapp", "eigenes"] as const;
+export const loesungIds = ["schadenmeldung", "aenderungen", "whatsapp", "chatbot", "eigenes"] as const;
 
 export type LoesungId = (typeof loesungIds)[number];
-
-// Lesbare Namen, z. B. für das Google Sheet und die Auswahlkacheln
-export const loesungNamen: Record<LoesungId, string> = {
-  schadenmeldung: "Schadenmeldung",
-  aenderungen: "Kundenänderungen",
-  whatsapp: "WhatsApp für Service und Vertrieb",
-  eigenes: "Etwas anderes",
-};
 
 // Schritt 1: Name
 export const schritt1Schema = z.object({
@@ -20,7 +10,7 @@ export const schritt1Schema = z.object({
   nachname: z.string().trim().min(1, { error: "Bitte geben Sie Ihren Nachnamen an." }).max(60),
 });
 
-// Schritt 2: Erreichbarkeit
+// Schritt 2: Erreichbarkeit und Einwilligung
 export const schritt2Schema = z.object({
   buero: z
     .string()
@@ -35,25 +25,18 @@ export const schritt2Schema = z.object({
     .refine((v) => v === "" || /^[+\d][\d\s/()-]{5,}$/.test(v), {
       error: "Bitte prüfen Sie die Telefonnummer.",
     }),
-});
-
-// Schritt 3: alles freiwillig außer der Einwilligung
-export const schritt3Schema = z.object({
-  zeitfresser: z.string().trim().max(1000, { error: "Bitte fassen Sie sich etwas kürzer." }),
-  interessen: z.array(z.enum(loesungIds)).max(loesungIds.length),
-  groesse: z.union([z.enum(bueroGroessen), z.literal("")]),
   einwilligung: z.literal(true, {
     error: "Bitte bestätigen Sie die Einwilligung.",
   }),
 });
 
-export const anfrageSchema = schritt1Schema.extend(schritt2Schema.shape).extend(schritt3Schema.shape);
+export const anfrageSchema = schritt1Schema.extend(schritt2Schema.shape);
 
 export type Anfrage = z.infer<typeof anfrageSchema>;
 
-export type Schritt = 1 | 2 | 3;
+export type Schritt = 1 | 2;
 
-const schrittSchemas = { 1: schritt1Schema, 2: schritt2Schema, 3: schritt3Schema } as const;
+const schrittSchemas = { 1: schritt1Schema, 2: schritt2Schema } as const;
 
 export type Pruefung = { ok: true } | { ok: false; fehler: Record<string, string> };
 
