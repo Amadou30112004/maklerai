@@ -22,7 +22,7 @@ export const site = {
     strasse: "Beethovenstr. 21",
     ort: "78054 Villingen-Schwenningen",
     // Google-Kalender-Buchungsseite (Konto jalloh.net)
-    terminLink: "https://calendar.app.google/RZeYpuCrCMQnmKzh8",
+    terminLink: "https://calendar.app.google/XUHXmk3cfW9BoVHn6",
   },
 
   platzhalter: {
